@@ -1,0 +1,62 @@
+<div class="rsvp-page">
+
+  <!-- CARD INVITO -->
+  @if (!showForm() && !submitted()) {
+    <app-invitation-card (conferma)="openForm()" />
+  }
+
+  <!-- FORM RSVP -->
+  @if (showForm() && !submitted()) {
+    <div class="rsvp-bg">
+      <div class="form-panel">
+        <p class="form-title">Ci sarò!</p>
+
+        <form [formGroup]="form" (ngSubmit)="onSubmit()">
+
+          <div class="field">
+            <label>Il tuo nome</label>
+            <input type="text" formControlName="nome" placeholder="Mario Rossi" />
+            @if (form.controls.nome.invalid && form.controls.nome.touched) {
+              <small>Inserisci il tuo nome (min. 2 caratteri)</small>
+            }
+          </div>
+
+          <div class="field">
+            <label>Quante persone venite?</label>
+            <div class="counter">
+              <button type="button" (click)="decrementa()" [disabled]="form.controls.num_partecipanti.value <= 1">−</button>
+              <span>{{ form.controls.num_partecipanti.value }}</span>
+              <button type="button" (click)="incrementa()" [disabled]="form.controls.num_partecipanti.value >= 20">+</button>
+            </div>
+          </div>
+
+          <div class="field">
+            <label>Un messaggio per Michela (opzionale)</label>
+            <textarea formControlName="messaggio" placeholder="Tanti auguri! 🎉" rows="3"></textarea>
+          </div>
+
+          @if (error()) {
+            <p class="field-error">{{ error() }}</p>
+          }
+
+          <button type="submit" class="submit-btn" [disabled]="loading()">
+            {{ loading() ? 'Invio in corso...' : 'Confermo la presenza 🎓' }}
+          </button>
+
+        </form>
+      </div>
+    </div>
+  }
+
+  <!-- SUCCESSO -->
+  @if (submitted()) {
+    <div class="rsvp-bg">
+      <div class="success-msg">
+        <span>🎉</span>
+        <p class="success-title">Grazie mille!</p>
+        <p class="success-sub">La tua presenza è stata confermata.<br>Ci vediamo il 16 Maggio!</p>
+      </div>
+    </div>
+  }
+
+</div>

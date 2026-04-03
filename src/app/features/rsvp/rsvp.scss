@@ -1,0 +1,192 @@
+$noise: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='200' height='200'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='200' height='200' filter='url(%23n)'/%3E%3C/svg%3E");
+
+$bg:      #7a8faa;
+$card-bg: #8298b5;
+$text:    rgba(255, 255, 255, 0.92);
+$text-dim: rgba(255, 255, 255, 0.72);
+
+:host {
+  display: block;
+}
+
+.rsvp-page {
+  min-height: 100vh;
+  background-color: $bg;
+}
+
+// ─── Wrapper form / success ──────────────────────────────────
+.rsvp-bg {
+  min-height: 100vh;
+  background-color: $bg;
+  background-image:
+    radial-gradient(ellipse at center, rgba(255,255,255,0.04) 0%, rgba(0,0,0,0.08) 100%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 2.5rem 1rem;
+  box-sizing: border-box;
+  position: relative;
+
+  &::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background-image: $noise;
+    background-size: 200px 200px;
+    opacity: 0.22;
+    mix-blend-mode: soft-light;
+    pointer-events: none;
+    z-index: 9999;
+  }
+}
+
+// ─── Form panel ──────────────────────────────────────────────
+.form-panel {
+  background-color: $card-bg;
+  border-radius: 2rem;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.18);
+  padding: 2.4rem 2rem;
+  width: 100%;
+  max-width: 420px;
+  color: $text;
+  font-family: 'Cormorant Garamond', 'Georgia', serif;
+}
+
+.form-title {
+  font-family: 'Great Vibes', cursive;
+  font-size: 2.4rem;
+  text-align: center;
+  margin: 0 0 1.6rem;
+  color: $text;
+}
+
+.field {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+  margin-bottom: 1.1rem;
+
+  label {
+    font-size: 0.88rem;
+    letter-spacing: 0.04em;
+    color: $text-dim;
+  }
+
+  input,
+  textarea {
+    background: rgba(255, 255, 255, 0.12);
+    border: 1px solid rgba(255, 255, 255, 0.28);
+    border-radius: 0.6rem;
+    padding: 0.6rem 0.85rem;
+    color: $text;
+    font-family: 'Cormorant Garamond', 'Georgia', serif;
+    font-size: 1rem;
+    outline: none;
+    resize: none;
+    width: 100%;
+    box-sizing: border-box;
+    transition: border-color 0.2s;
+
+    &::placeholder { color: rgba(255, 255, 255, 0.38); }
+    &:focus        { border-color: rgba(255, 255, 255, 0.55); }
+  }
+
+  small {
+    color: #ffc8c8;
+    font-size: 0.8rem;
+  }
+}
+
+.field-error {
+  background: rgba(255, 90, 90, 0.18);
+  border: 1px solid rgba(255, 90, 90, 0.35);
+  border-radius: 0.5rem;
+  padding: 0.55rem 0.9rem;
+  font-size: 0.88rem;
+  color: #ffe0e0;
+  margin-bottom: 0.8rem;
+}
+
+// ─── Counter ────────────────────────────────────────────────
+.counter {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+
+  button {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    border: 1px solid rgba(255, 255, 255, 0.4);
+    background: rgba(255, 255, 255, 0.12);
+    color: $text;
+    font-size: 1.1rem;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: background 0.18s;
+    flex-shrink: 0;
+    line-height: 1;
+
+    &:hover:not(:disabled) { background: rgba(255, 255, 255, 0.22); }
+    &:disabled { opacity: 0.38; cursor: default; }
+  }
+
+  span {
+    font-size: 1.35rem;
+    font-weight: 700;
+    min-width: 2rem;
+    text-align: center;
+  }
+}
+
+// ─── Submit ──────────────────────────────────────────────────
+.submit-btn {
+  width: 100%;
+  padding: 0.65rem;
+  border-radius: 50px;
+  border: 1px solid rgba(255, 255, 255, 0.38);
+  background: rgba(255, 255, 255, 0.12);
+  color: $text;
+  font-family: 'Cormorant Garamond', 'Georgia', serif;
+  font-size: 1rem;
+  font-weight: 500;
+  letter-spacing: 0.08em;
+  cursor: pointer;
+  margin-top: 0.4rem;
+  transition: background 0.2s;
+
+  &:hover:not(:disabled) { background: rgba(255, 255, 255, 0.22); }
+  &:disabled { opacity: 0.5; cursor: default; }
+}
+
+// ─── Success ────────────────────────────────────────────────
+.success-msg {
+  background-color: $card-bg;
+  border-radius: 2rem;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.18);
+  padding: 3rem 2rem;
+  width: 100%;
+  max-width: 420px;
+  text-align: center;
+  color: $text;
+  font-family: 'Cormorant Garamond', 'Georgia', serif;
+
+  span { font-size: 3.2rem; display: block; margin-bottom: 0.8rem; }
+}
+
+.success-title {
+  font-family: 'Great Vibes', cursive;
+  font-size: 2.4rem;
+  margin: 0 0 0.6rem;
+}
+
+.success-sub {
+  font-size: 1.05rem;
+  color: rgba(255, 255, 255, 0.78);
+  line-height: 1.6;
+  margin: 0;
+}
