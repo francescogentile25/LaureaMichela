@@ -56,7 +56,7 @@ export const AuthStore = signalStore(
       },
 
       clearUser() {
-        patchState(store, initialState);
+        patchState(store, { ...initialState, loading: false });
       },
 
       me$: rxMethod<void>(
@@ -118,7 +118,7 @@ export const AuthStore = signalStore(
             authService.logout().pipe(
               tapResponse({
                 next: () => {
-                  patchState(store, initialState);
+                  patchState(store, { ...initialState, loading: false });
                   router.navigateByUrl(logoutSuccessPage);
                 },
                 error: (error: Error) => {
@@ -127,6 +127,7 @@ export const AuthStore = signalStore(
                     summary: 'Errore logout',
                     detail: error.message,
                   });
+                  patchState(store, { loading: false });
                 },
               })
             )

@@ -21,7 +21,7 @@ export const loginGuard: CanActivateFn = (route, state) => {
           summary: `[Login Guard]`,
           detail: 'Sei già autenticato'
         });
-        return router.createUrlTree([globalPaths.homeUrl]);
+        return router.createUrlTree([globalPaths.dashboardUrl]);
       }
 
       // Utente non loggato, può accedere alla pagina di login
@@ -29,3 +29,4 @@ export const loginGuard: CanActivateFn = (route, state) => {
     })
   );
 };
+
