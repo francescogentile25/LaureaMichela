@@ -2,20 +2,20 @@
 $noise: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='200' height='200'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='200' height='200' filter='url(%23n)'/%3E%3C/svg%3E");
 
 // ─── Palette ────────────────────────────────────────────────────
-$bg:       #7a8faa;
-$card-bg:  #8298b5;
+$bg:       #819edb;
+$card-bg:  #8ea9e1;
 $text:     rgba(255, 255, 255, 0.92);
 $text-dim: rgba(255, 255, 255, 0.76);
-$blob:     rgba(255, 255, 255, 0.085);
-$blob-sm:  rgba(255, 255, 255, 0.065);
+$blob:     rgba(255, 255, 255, 0.16);
+$blob-sm:  rgba(255, 255, 255, 0.11);
 
 // ─── Page background ───────────────────────────────────────────
 .page-bg {
   min-height: 100vh;
   background-color: $bg;
-  // Vignette molto morbida: bordi leggermente più scuri
   background-image:
-    radial-gradient(ellipse at center, rgba(255,255,255,0.04) 0%, rgba(0,0,0,0.08) 100%);
+    linear-gradient(140deg, #7997d8 0%, #94afe5 52%, #7896d6 100%),
+    radial-gradient(ellipse at center, rgba(255,255,255,0.06) 0%, rgba(38, 65, 121, 0.18) 100%);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -56,6 +56,7 @@ $blob-sm:  rgba(255, 255, 255, 0.065);
     0 2px 8px  rgba(0, 0, 0, 0.10),
     inset 0 1px 0 rgba(255, 255, 255, 0.14);
   border: 1px solid rgba(255, 255, 255, 0.12);
+  animation: cardFloat 7s ease-in-out infinite;
 
   // Grain texture sulla card
   &::after {
@@ -83,6 +84,7 @@ $blob-sm:  rgba(255, 255, 255, 0.065);
   background: $blob;
   pointer-events: none;
   z-index: 0;
+  animation: blobPulse 4.6s ease-in-out infinite;
 }
 
 .blob--tl {
@@ -98,6 +100,7 @@ $blob-sm:  rgba(255, 255, 255, 0.065);
   top: -45px;
   right: -45px;
   background: $blob-sm;
+  animation-delay: 0.35s;
 }
 
 .blob--bl {
@@ -106,6 +109,7 @@ $blob-sm:  rgba(255, 255, 255, 0.065);
   bottom: -60px;
   left: -55px;
   background: $blob-sm;
+  animation-delay: 0.7s;
 }
 
 .blob--br {
@@ -114,6 +118,7 @@ $blob-sm:  rgba(255, 255, 255, 0.065);
   bottom: -40px;
   right: -40px;
   background: $blob;
+  animation-delay: 1s;
 }
 
 // ─── Arc overlays SVG ─────────────────────────────────────────
@@ -124,16 +129,20 @@ $blob-sm:  rgba(255, 255, 255, 0.065);
   width: 130px;
   height: 130px;
   opacity: 1;
+  transform-origin: center;
+  animation: arcOrbit 6.2s ease-in-out infinite;
 }
 
 .arc--tr {
   top: -5px;
   right: -5px;
+  animation-delay: 0.3s;
 }
 
 .arc--bl {
   bottom: -5px;
   left: -5px;
+  animation-delay: 1.2s;
 }
 
 // ─── Inner padding ─────────────────────────────────────────────
@@ -157,6 +166,8 @@ $blob-sm:  rgba(255, 255, 255, 0.065);
   width: 62px;
   height: auto;
   filter: drop-shadow(0 2px 6px rgba(0,0,0,0.15));
+  transform-origin: center 70%;
+  animation: capBob 2.6s ease-in-out infinite;
 }
 
 // ─── Master in label ──────────────────────────────────────────
@@ -228,6 +239,7 @@ $blob-sm:  rgba(255, 255, 255, 0.065);
   height: 18px;
   flex-shrink: 0;
   opacity: 0.82;
+  animation: iconPulse 2.2s ease-in-out infinite;
 }
 
 // ─── Nome ──────────────────────────────────────────────────────
@@ -247,6 +259,8 @@ $blob-sm:  rgba(255, 255, 255, 0.065);
   height: 48px;
   margin-bottom: 1.8rem;
   opacity: 0.82;
+  transform-origin: center bottom;
+  animation: flowerSway 2.9s ease-in-out infinite;
 }
 
 // ─── Bottone ──────────────────────────────────────────────────
@@ -272,4 +286,37 @@ $blob-sm:  rgba(255, 255, 255, 0.065);
   &:active {
     background: rgba(255, 255, 255, 0.25);
   }
+}
+
+@keyframes capBob {
+  0%, 100% { transform: translateY(0) rotate(0deg); }
+  25% { transform: translateY(-6px) rotate(-3deg); }
+  50% { transform: translateY(-10px) rotate(0deg); }
+  75% { transform: translateY(-6px) rotate(3deg); }
+}
+
+@keyframes arcOrbit {
+  0%, 100% { transform: scale(1) rotate(0deg); opacity: 0.92; }
+  50% { transform: scale(1.07) rotate(8deg); opacity: 1; }
+}
+
+@keyframes blobPulse {
+  0%, 100% { transform: scale(1); opacity: 0.8; }
+  50% { transform: scale(1.11); opacity: 1; }
+}
+
+@keyframes flowerSway {
+  0%, 100% { transform: rotate(0deg) translateY(0); }
+  25% { transform: rotate(-5deg) translateY(-2px); }
+  75% { transform: rotate(5deg) translateY(-1px); }
+}
+
+@keyframes iconPulse {
+  0%, 100% { transform: scale(1); opacity: 0.82; }
+  50% { transform: scale(1.18); opacity: 1; }
+}
+
+@keyframes cardFloat {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-6px); }
 }

@@ -5,11 +5,11 @@ import { SimpleFormModel } from '../../../core/utils/simple-form-model.util';
 import { LoginRequest } from '../models/requests/login.request';
 import { InputTextModule } from 'primeng/inputtext';
 import { PasswordModule } from 'primeng/password';
-import { ButtonModule } from 'primeng/button';
+import { RouterLink } from '@angular/router';
 
 @Component({
   selector: 'app-login',
-  imports: [ReactiveFormsModule, FormsModule, InputTextModule, PasswordModule, ButtonModule],
+  imports: [ReactiveFormsModule, FormsModule, InputTextModule, PasswordModule, RouterLink],
   templateUrl: './login.html',
   styleUrl: './login.scss',
 })

@@ -1,41 +1,35 @@
-<div class="min-h-screen bg-gradient-to-br from-rose-50 to-pink-100 p-6">
+<div class="dashboard-page">
 
-  <!-- Header -->
-  <div class="flex items-center justify-between mb-8">
+  <div class="dashboard-header">
     <div>
-      <h1 class="text-3xl font-bold text-gray-800">Ciao Michela! 🎓</h1>
-      <p class="text-gray-500 mt-1">Ecco chi ha confermato la presenza alla tua laurea</p>
+      <h1 class="dashboard-title">Ciao Michela!</h1>
+      <p class="dashboard-subtitle">Ecco chi ha confermato la presenza alla tua laurea</p>
     </div>
-    <p-button
-      label="Esci"
-      icon="pi pi-sign-out"
-      severity="secondary"
-      [outlined]="true"
-      (onClick)="logout()"
-    />
+    <button class="logout-btn" type="button" (click)="logout()">
+      <i class="pi pi-sign-out"></i>
+      <span>Esci</span>
+    </button>
   </div>
 
-  <!-- Stats -->
-  <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-8">
-    <div class="bg-white rounded-2xl shadow p-6 text-center">
-      <div class="text-4xl font-bold text-pink-500">{{ rsvps().length }}</div>
-      <div class="text-gray-500 mt-1">Conferme ricevute</div>
+  <div class="stats-grid">
+    <div class="stat-card">
+      <div class="stat-value">{{ rsvps().length }}</div>
+      <div class="stat-label">Conferme ricevute</div>
     </div>
-    <div class="bg-white rounded-2xl shadow p-6 text-center">
-      <div class="text-4xl font-bold text-rose-500">{{ totalPersone }}</div>
-      <div class="text-gray-500 mt-1">Persone totali</div>
+    <div class="stat-card">
+      <div class="stat-value">{{ totalPersone }}</div>
+      <div class="stat-label">Persone totali</div>
     </div>
-    <div class="bg-white rounded-2xl shadow p-6 text-center">
-      <div class="text-4xl font-bold text-amber-500">{{ unreadCount }}</div>
-      <div class="text-gray-500 mt-1">Nuove notifiche</div>
+    <div class="stat-card">
+      <div class="stat-value">{{ unreadCount }}</div>
+      <div class="stat-label">Nuove notifiche</div>
     </div>
   </div>
 
-  <!-- Notifiche -->
   @if (notifications().length > 0) {
-    <div class="bg-white rounded-2xl shadow p-6 mb-6">
-      <div class="flex items-center justify-between mb-4">
-        <h2 class="text-lg font-semibold text-gray-800">
+    <div class="panel-card">
+      <div class="panel-header">
+        <h2 class="panel-title">
           Notifiche
           @if (unreadCount > 0) {
             <p-badge [value]="unreadCount.toString()" severity="danger" class="ml-2" />
@@ -47,57 +41,57 @@
             severity="secondary"
             size="small"
             [text]="true"
+            styleClass="mark-read-btn"
             (onClick)="markAllRead()"
           />
         }
       </div>
-      <div class="flex flex-col gap-2">
+      <div class="notifications-list">
         @for (n of notifications(); track n.id) {
           <div
-            class="flex items-center gap-3 p-3 rounded-lg"
-            [class.bg-pink-50]="!n.read"
-            [class.bg-gray-50]="n.read"
+            class="notification-row"
+            [class.notification-row--unread]="!n.read"
+            [class.notification-row--read]="n.read"
           >
-            <span class="text-lg">{{ n.read ? '✅' : '🔔' }}</span>
-            <span class="flex-1 text-sm text-gray-700">{{ n.message }}</span>
-            <span class="text-xs text-gray-400">{{ n.created_at | date: 'dd/MM HH:mm' }}</span>
+            <i class="notification-icon pi" [class.pi-check-circle]="n.read" [class.pi-bell]="!n.read"></i>
+            <span class="notification-message">{{ n.message }}</span>
+            <span class="notification-time">{{ n.created_at | date: 'dd/MM HH:mm' }}</span>
           </div>
         }
       </div>
     </div>
   }
 
-  <!-- Lista RSVP -->
-  <div class="bg-white rounded-2xl shadow p-6">
-    <h2 class="text-lg font-semibold text-gray-800 mb-4">Chi ha confermato</h2>
+  <div class="panel-card">
+    <h2 class="panel-title list-title">Chi ha confermato</h2>
 
     @if (loading()) {
-      <div class="text-center text-gray-400 py-8">Caricamento...</div>
+      <div class="list-placeholder">Caricamento...</div>
     } @else if (rsvps().length === 0) {
-      <div class="text-center text-gray-400 py-8">
-        <div class="text-4xl mb-2">🕐</div>
+      <div class="list-placeholder">
+        <div class="empty-icon">Nessuna conferma</div>
         <p>Ancora nessuna conferma. Condividi il link agli invitati!</p>
       </div>
     } @else {
-      <div class="flex flex-col gap-3">
+      <div class="rsvp-list">
         @for (rsvp of rsvps(); track rsvp.id) {
-          <div class="flex items-start gap-4 p-4 border border-gray-100 rounded-xl hover:bg-gray-50 transition">
-            <div class="w-10 h-10 rounded-full bg-pink-100 flex items-center justify-center text-pink-600 font-bold text-lg shrink-0">
+          <div class="rsvp-row">
+            <div class="avatar">
               {{ rsvp.nome.charAt(0).toUpperCase() }}
             </div>
-            <div class="flex-1 min-w-0">
-              <div class="flex items-center gap-2 flex-wrap">
-                <span class="font-semibold text-gray-800">{{ rsvp.nome }}</span>
+            <div class="rsvp-content">
+              <div class="rsvp-head">
+                <span class="rsvp-name">{{ rsvp.nome }}</span>
                 <p-tag
                   [value]="rsvp.num_partecipanti + ' persona/e'"
                   severity="secondary"
                 />
               </div>
               @if (rsvp.messaggio) {
-                <p class="text-sm text-gray-500 mt-1 italic">"{{ rsvp.messaggio }}"</p>
+                <p class="rsvp-message">"{{ rsvp.messaggio }}"</p>
               }
             </div>
-            <span class="text-xs text-gray-400 shrink-0">{{ rsvp.created_at | date: 'dd/MM HH:mm' }}</span>
+            <span class="rsvp-time">{{ rsvp.created_at | date: 'dd/MM HH:mm' }}</span>
           </div>
         }
       </div>

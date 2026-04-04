@@ -1,0 +1,246 @@
+:host {
+  --primary: #819edb;
+  --primary-dark: #5578c8;
+  --primary-mid: #6f90d6;
+  --primary-soft: #dfe8fb;
+  --surface: #f6f8ff;
+  --ink: #24375d;
+  --ink-muted: #59719f;
+  display: block;
+}
+
+.dashboard-page {
+  min-height: 100vh;
+  padding: 1.5rem;
+  background: linear-gradient(140deg, #edf2ff 0%, #d7e4ff 52%, #c9dafb 100%);
+}
+
+.dashboard-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  margin-bottom: 2rem;
+}
+
+.dashboard-title {
+  margin: 0;
+  font-size: clamp(1.7rem, 3vw, 2.1rem);
+  font-weight: 800;
+  color: var(--ink);
+}
+
+.dashboard-subtitle {
+  margin: 0.35rem 0 0;
+  color: var(--ink-muted);
+}
+
+.logout-btn {
+  border: 1px solid rgba(85, 120, 200, 0.35);
+  background: #ffffffcc;
+  color: var(--ink);
+  border-radius: 999px;
+  padding: 0.55rem 1rem;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+
+  &:hover {
+    background: #fff;
+    border-color: rgba(85, 120, 200, 0.7);
+    transform: translateY(-1px);
+  }
+}
+
+.stats-grid {
+  display: grid;
+  grid-template-columns: repeat(1, minmax(0, 1fr));
+  gap: 1rem;
+  margin-bottom: 2rem;
+}
+
+.stat-card,
+.panel-card {
+  background: #ffffffcc;
+  border: 1px solid rgba(129, 158, 219, 0.35);
+  border-radius: 1.1rem;
+  box-shadow: 0 14px 30px rgba(76, 104, 165, 0.14);
+  backdrop-filter: blur(3px);
+}
+
+.stat-card {
+  padding: 1.35rem;
+  text-align: center;
+}
+
+.stat-value {
+  color: var(--primary-dark);
+  font-size: 2.15rem;
+  font-weight: 800;
+}
+
+.stat-label {
+  color: var(--ink-muted);
+  margin-top: 0.25rem;
+}
+
+.panel-card {
+  padding: 1.3rem;
+  margin-bottom: 1.4rem;
+}
+
+.panel-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+  margin-bottom: 0.9rem;
+}
+
+.panel-title {
+  margin: 0;
+  color: var(--ink);
+  font-size: 1.1rem;
+  font-weight: 700;
+}
+
+.list-title {
+  margin-bottom: 0.95rem;
+}
+
+.notifications-list,
+.rsvp-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.7rem;
+}
+
+.notification-row,
+.rsvp-row {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.8rem;
+  border-radius: 0.8rem;
+}
+
+.notification-row--unread {
+  background: #e8f0ff;
+  border: 1px solid #c7d8fc;
+}
+
+.notification-row--read {
+  background: var(--surface);
+  border: 1px solid #e4ebfc;
+}
+
+.notification-icon {
+  font-size: 1.05rem;
+  color: #5b7fcb;
+}
+
+.notification-message {
+  flex: 1;
+  color: #2f446f;
+  font-size: 0.92rem;
+}
+
+.notification-time,
+.rsvp-time {
+  color: #6e82ab;
+  font-size: 0.78rem;
+  white-space: nowrap;
+}
+
+.rsvp-row {
+  align-items: flex-start;
+  border: 1px solid #dce6fc;
+  background: #f9fbff;
+  transition: border-color 0.2s ease, transform 0.2s ease;
+
+  &:hover {
+    border-color: #b9cdf8;
+    transform: translateY(-1px);
+  }
+}
+
+.avatar {
+  width: 2.5rem;
+  height: 2.5rem;
+  border-radius: 999px;
+  background: #dbe6ff;
+  color: #4064b6;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+  flex-shrink: 0;
+}
+
+.rsvp-content {
+  flex: 1;
+  min-width: 0;
+}
+
+.rsvp-head {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  flex-wrap: wrap;
+}
+
+.rsvp-name {
+  font-weight: 700;
+  color: var(--ink);
+}
+
+.rsvp-message {
+  margin: 0.3rem 0 0;
+  font-size: 0.9rem;
+  font-style: italic;
+  color: var(--ink-muted);
+}
+
+.list-placeholder {
+  padding: 1.75rem 0;
+  text-align: center;
+  color: #6f83ad;
+}
+
+.empty-icon {
+  display: inline-block;
+  margin-bottom: 0.45rem;
+  border-radius: 999px;
+  padding: 0.3rem 0.8rem;
+  font-size: 0.78rem;
+  font-weight: 700;
+  letter-spacing: 0.03em;
+  text-transform: uppercase;
+  color: #4c69ac;
+  background: #dce8ff;
+}
+
+@media (min-width: 640px) {
+  .dashboard-page {
+    padding: 2rem 1.75rem;
+  }
+
+  .stats-grid {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 640px) {
+  .dashboard-header {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .logout-btn {
+    width: 100%;
+    justify-content: center;
+  }
+}

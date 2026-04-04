@@ -1,47 +1,60 @@
-<div class="min-h-screen flex items-center justify-center bg-gradient-to-br from-rose-50 to-pink-100">
-  <div class="bg-white rounded-2xl shadow-xl p-10 w-full max-w-md">
-    <div class="text-center mb-8">
-      <h1 class="text-3xl font-bold text-gray-800">Benvenuta 🎓</h1>
-      <p class="text-gray-500 mt-2">Accedi per vedere le conferme di presenza</p>
+<div class="login-page">
+  <div class="login-card">
+    <div class="login-head">
+      <h1 class="login-title">Benvenuta Michela</h1>
+      <p class="login-subtitle">Accedi per vedere le conferme di presenza</p>
+      <svg class="sunflower" viewBox="0 0 50 70" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <ellipse cx="25" cy="13" rx="4" ry="8" fill="none" stroke="currentColor" stroke-width="1.2" opacity="0.8"/>
+        <ellipse cx="25" cy="13" rx="4" ry="8" fill="none" stroke="currentColor" stroke-width="1.2" opacity="0.8" transform="rotate(45 25 25)"/>
+        <ellipse cx="25" cy="13" rx="4" ry="8" fill="none" stroke="currentColor" stroke-width="1.2" opacity="0.8" transform="rotate(90 25 25)"/>
+        <ellipse cx="25" cy="13" rx="4" ry="8" fill="none" stroke="currentColor" stroke-width="1.2" opacity="0.8" transform="rotate(135 25 25)"/>
+        <ellipse cx="25" cy="13" rx="4" ry="8" fill="none" stroke="currentColor" stroke-width="1.2" opacity="0.8" transform="rotate(180 25 25)"/>
+        <ellipse cx="25" cy="13" rx="4" ry="8" fill="none" stroke="currentColor" stroke-width="1.2" opacity="0.8" transform="rotate(225 25 25)"/>
+        <ellipse cx="25" cy="13" rx="4" ry="8" fill="none" stroke="currentColor" stroke-width="1.2" opacity="0.8" transform="rotate(270 25 25)"/>
+        <ellipse cx="25" cy="13" rx="4" ry="8" fill="none" stroke="currentColor" stroke-width="1.2" opacity="0.8" transform="rotate(315 25 25)"/>
+        <circle cx="25" cy="25" r="4.5" fill="none" stroke="currentColor" stroke-width="1.2" opacity="0.8"/>
+        <line x1="25" y1="30" x2="25" y2="58" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" opacity="0.8"/>
+        <path d="M25 46 Q18 42 16 36" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" fill="none" opacity="0.8"/>
+      </svg>
     </div>
 
-    <form [formGroup]="form" (ngSubmit)="onSubmit()" class="flex flex-col gap-5">
-      <div class="flex flex-col gap-1">
-        <label class="text-sm font-medium text-gray-700">Email</label>
+    <form [formGroup]="form" (ngSubmit)="onSubmit()" class="login-form">
+      <div class="field-group">
+        <label class="field-label">Email</label>
         <input
           pInputText
           type="email"
           formControlName="email"
           placeholder="la-tua-email@esempio.com"
-          class="w-full"
+          class="field-input"
         />
         @if (form.controls.email.invalid && form.controls.email.touched) {
-          <small class="text-red-500">Email non valida</small>
+          <small class="field-error">Email non valida</small>
         }
       </div>
 
-      <div class="flex flex-col gap-1">
-        <label class="text-sm font-medium text-gray-700">Password</label>
+      <div class="field-group">
+        <label class="field-label">Password</label>
         <p-password
           formControlName="password"
           placeholder="La tua password"
           [feedback]="false"
           [toggleMask]="true"
-          styleClass="w-full"
-          inputStyleClass="w-full"
+          styleClass="field-password"
+          inputStyleClass="field-input"
         />
         @if (form.controls.password.invalid && form.controls.password.touched) {
-          <small class="text-red-500">Password obbligatoria</small>
+          <small class="field-error">Password obbligatoria</small>
         }
       </div>
 
-      <p-button
-        type="submit"
-        label="Accedi"
-        [loading]="authStore.loading()"
-        styleClass="w-full mt-2"
-        severity="contrast"
-      />
+      <button type="submit" class="action-btn action-btn--filled" [disabled]="authStore.loading()">
+        {{ authStore.loading() ? 'Accesso in corso...' : 'Accedi' }}
+      </button>
+
+      <button type="button" class="action-btn action-btn--outline" routerLink="/rsvp">
+        Torna all'invito
+      </button>
     </form>
   </div>
 </div>
