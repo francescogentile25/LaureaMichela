@@ -4,6 +4,10 @@ import { authGuard } from "../../core/guards/auth.guard";
 
 export const layoutRoutes: Routes = [
   {
+    path: 'invito',
+    loadComponent: () => import('./../envelope/envelope').then(c => c.EnvelopePage)
+  },
+  {
     path: 'rsvp',
     loadComponent: () => import('./../rsvp/rsvp').then(c => c.Rsvp)
   },
@@ -20,10 +24,10 @@ export const layoutRoutes: Routes = [
   {
     path: '',
     pathMatch: 'full',
-    redirectTo: 'rsvp'
+    redirectTo: 'invito'
   },
   {
     path: '**',
-    redirectTo: 'rsvp'
+    redirectTo: 'invito'
   },
 ];
