@@ -75,6 +75,7 @@ $blob-sm:    rgba(255,255,255,0.10);
     border-style: solid;
     border-width: 258px 0 0 265px;
     border-color: transparent transparent transparent $env-dark;
+    transition: border-color 0.4s ease;
   }
 
   // V-fold right triangle
@@ -90,6 +91,7 @@ $blob-sm:    rgba(255,255,255,0.10);
     border-style: solid;
     border-width: 0 0 258px 265px;
     border-color: transparent transparent $env-dark transparent;
+    transition: border-color 0.4s ease;
   }
 
   @media (min-width: 640px) {
@@ -102,6 +104,14 @@ $blob-sm:    rgba(255,255,255,0.10);
     &::after {
       border-width: 0 0 332px 341px;
     }
+  }
+}
+
+// ─── Mobile-only triangle color shift while opening ──────────────
+@media (hover: none) and (pointer: coarse) {
+  .envelope.env-opening {
+    &::before { border-color: transparent transparent transparent $env-light; }
+    &::after  { border-color: transparent transparent $env-light transparent; }
   }
 }
 

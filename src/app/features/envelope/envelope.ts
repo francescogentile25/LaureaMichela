@@ -52,6 +52,9 @@ export class EnvelopePage implements AfterViewInit, OnDestroy {
     gsap.set('.hint-area', { opacity: 0 });
     gsap.to('.hint-area', { opacity: 1, duration: 0.6, delay: 1.4 });
 
+    // Bow idle animation — starts after entrance
+    this.startBowIdleAnimation();
+
     window.addEventListener('pointermove', this.onMoveBound, { passive: false });
     window.addEventListener('pointerup',   this.onUpBound);
   }
@@ -67,6 +70,8 @@ export class EnvelopePage implements AfterViewInit, OnDestroy {
     this.isDragging = true;
     this.startY     = e.clientY;
     this.startAngle = this.flapAngle;
+    // Signal opening to CSS (triangle color shift, mobile only via media query)
+    this.envelopeRef.nativeElement.classList.add('env-opening');
   }
 
   private onPointerMove(e: PointerEvent): void {
@@ -123,6 +128,7 @@ export class EnvelopePage implements AfterViewInit, OnDestroy {
 
   private closeFlap(): void {
     this.isAnimating = true;
+    this.envelopeRef.nativeElement.classList.remove('env-opening');
     gsap.to(this.flapRef.nativeElement, {
       rotateX: 0,
       duration: 0.4,
@@ -134,12 +140,77 @@ export class EnvelopePage implements AfterViewInit, OnDestroy {
     });
   }
 
+  private startBowIdleAnimation(): void {
+    const bow      = this.bowRef.nativeElement;
+    const bowLeft  = bow.querySelector('#bow-left');
+    const bowRight = bow.querySelector('#bow-right');
+    const knot     = bow.querySelector('circle');
+
+    // Whole bow: gentle float
+    gsap.to(bow, {
+      y: -6,
+      duration: 2.2,
+      ease: 'sine.inOut',
+      repeat: -1,
+      yoyo: true,
+      delay: 1.2,
+    });
+
+    // Left ribbon loop: slight counter-clockwise flutter
+    if (bowLeft) {
+      gsap.to(bowLeft, {
+        rotation: -5,
+        x: -3,
+        duration: 2.0,
+        ease: 'sine.inOut',
+        repeat: -1,
+        yoyo: true,
+        transformOrigin: '110px 35px',
+        delay: 1.4,
+      });
+    }
+
+    // Right ribbon loop: slight clockwise flutter (slightly different timing)
+    if (bowRight) {
+      gsap.to(bowRight, {
+        rotation: 5,
+        x: 3,
+        duration: 2.4,
+        ease: 'sine.inOut',
+        repeat: -1,
+        yoyo: true,
+        transformOrigin: '110px 35px',
+        delay: 1.6,
+      });
+    }
+
+    // Knot: gentle pulse
+    if (knot) {
+      gsap.to(knot, {
+        scale: 1.15,
+        duration: 1.8,
+        ease: 'sine.inOut',
+        repeat: -1,
+        yoyo: true,
+        transformOrigin: '110px 35px',
+        delay: 1.2,
+      });
+    }
+  }
+
   private afterFlapOpen(): void {
     this.isFullyOpen.set(true);
+    this.envelopeRef.nativeElement.classList.remove('env-opening');
     gsap.to('.hint-area', { opacity: 0, duration: 0.2 });
 
     const env = this.envelopeRef.nativeElement;
     const bow = this.bowRef.nativeElement;
+
+    // Stop bow idle animation before splitting
+    gsap.killTweensOf(bow);
+    gsap.killTweensOf(bow.querySelector('#bow-left'));
+    gsap.killTweensOf(bow.querySelector('#bow-right'));
+    gsap.killTweensOf(bow.querySelector('circle'));
 
     // Tilt envelope (like original CodePen)
     gsap.to(env, {
@@ -154,10 +225,9 @@ export class EnvelopePage implements AfterViewInit, OnDestroy {
     const bowLeft  = bow.querySelector('#bow-left');
     const bowRight = bow.querySelector('#bow-right');
     if (bowLeft && bowRight) {
-      gsap.to(bowLeft,  { x: -50, opacity: 0, duration: 0.5, ease: 'power2.in' });
-      gsap.to(bowRight, { x:  50, opacity: 0, duration: 0.5, ease: 'power2.in' });
-      // Knot fades too
-      gsap.to(bow.querySelector('circle'), { opacity: 0, duration: 0.3, delay: 0.2 });
+      gsap.to(bowLeft,  { x: -55, y: -10, opacity: 0, rotation: -20, duration: 0.5, ease: 'power2.in', transformOrigin: '100% 50%' });
+      gsap.to(bowRight, { x:  55, y: -10, opacity: 0, rotation:  20, duration: 0.5, ease: 'power2.in', transformOrigin: '0% 50%' });
+      gsap.to(bow.querySelector('circle'), { scale: 0, opacity: 0, duration: 0.25, delay: 0.15, transformOrigin: '50% 50%' });
     }
 
     // Reveal the card after short delay
@@ -187,7 +257,7 @@ export class EnvelopePage implements AfterViewInit, OnDestroy {
               onComplete: () => { this.router.navigate(['/rsvp']); },
             });
           });
-        }, 1200);
+        }, 500);
       },
     });
 
