@@ -9,27 +9,26 @@
 
     <div class="scene-center">
 
-      <div class="envelope" (pointerdown)="onEnvelopePointerDown($event)">
+      <div class="env-wrapper" (pointerdown)="onEnvelopePointerDown($event)">
 
-        <!-- Back face (shows through top-center triangle when flap opens) -->
-        <div class="env-back"></div>
+        <!-- Shadow + body background -->
+        <div class="env-base"></div>
 
-        <!-- Letter slides up from inside -->
-        <div class="letter" #letter>
+        <!-- Letter card (starts hidden behind base/svg) -->
+        <div class="env-card" #letter>
           <p class="letter-name">Michela</p>
           <div class="letter-divider"></div>
           <p class="letter-tagline">ti aspetto per festeggiare</p>
         </div>
 
-        <!-- Front fold panels: create the classic envelope diamond seam lines -->
-        <div class="env-panel env-left"></div>
-        <div class="env-panel env-right"></div>
-        <div class="env-panel env-bottom-tri"></div>
+        <!-- SVG: left and right triangular fold panels -->
+        <svg class="env-svg" viewBox="0 0 660 290" fill="none" aria-hidden="true" preserveAspectRatio="none">
+          <path d="M330 145 L0 290 L0 0 Z"   fill="#5D5790"/>
+          <path d="M330 145 L660 290 L660 0 Z" fill="#555084"/>
+        </svg>
 
-        <!-- Flap with small wax-seal dot -->
-        <div class="env-flap" #flap>
-          <div class="flap-seal"></div>
-        </div>
+        <!-- Flap: downward-pointing triangle, rotates backward to open -->
+        <div class="env-flap" #flap></div>
 
       </div>
 

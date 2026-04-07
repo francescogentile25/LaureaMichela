@@ -1,27 +1,34 @@
 // ─── Noise texture ──────────────────────────────────────────────
 $noise: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='200' height='200'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='200' height='200' filter='url(%23n)'/%3E%3C/svg%3E");
 
-// ─── Palette ────────────────────────────────────────────────────
-$bg-from:    #7997d8;
-$bg-to:      #7896d6;
-$env-cream:  #f0e8d5;
-$env-fold:   #e2d6bf;
-$env-shadow: #c9bfa8;
-$flap-color: #e8dcc8;
-$seal:       #9b7fa8;
+// ─── Envelope dimensions ────────────────────────────────────────
+// Replicate CodePen proportions: 330×199 envelope, 150px flap height
+$env-w:      320px;
+$env-h:      196px;
+$flap-h:     146px;
+$card-w:     300px;
+$card-h:     182px;
+
+$env-w-lg:   440px;
+$env-h-lg:   268px;
+$flap-h-lg:  200px;
+$card-w-lg:  412px;
+$card-h-lg:  250px;
+
+// ─── Colors (match CodePen palette, adapted to app blue theme) ──
+$env-base:   #6d68a0;   // rect bottom — slightly lighter purple
+$env-left:   #7874a8;   // left triangle (lighter)
+$env-right:  #655f96;   // right triangle (darker)
+$flap-color: #7874a8;   // flap triangle
+$card-bg:    #d8d7e6;   // card background
+$seal:       #a89fc5;
 $blob:       rgba(255,255,255,0.15);
 $blob-sm:    rgba(255,255,255,0.10);
-
-// ─── Envelope size ──────────────────────────────────────────────
-$w:    300px;
-$h:    200px;
-$w-lg: 420px;
-$h-lg: 280px;
 
 // ─── Page ───────────────────────────────────────────────────────
 .page-bg {
   min-height: 100dvh;
-  background: linear-gradient(145deg, #7997d8 0%, #94afe5 55%, $bg-to 100%);
+  background: linear-gradient(145deg, #7997d8 0%, #94afe5 55%, #7896d6 100%);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -64,7 +71,7 @@ $h-lg: 280px;
 .blob--bl { width: 210px; height: 210px; bottom: -70px; left: -65px; background: $blob-sm; animation-delay: 1s; }
 .blob--br { width: 150px; height: 150px; bottom: -50px; right: -50px; background: $blob; animation-delay: .3s; }
 
-// ─── Center stack ───────────────────────────────────────────────
+// ─── Scene center ───────────────────────────────────────────────
 .scene-center {
   display: flex;
   flex-direction: column;
@@ -72,118 +79,86 @@ $h-lg: 280px;
   gap: 2.4rem;
 }
 
-// ─── Envelope container ─────────────────────────────────────────
-.envelope {
+// ─── Envelope wrapper — perspective root ────────────────────────
+// Same structure as CodePen .container: fixed size, absolute children
+.env-wrapper {
   position: relative;
-  width: $w;
-  height: $h;
+  width: $env-w;
+  height: $env-h + $flap-h; // total height = body + flap headroom
   cursor: pointer;
   user-select: none;
   touch-action: none;
-  perspective: 1000px;
-  perspective-origin: 50% -30%;
-  animation: envFloat 5s ease-in-out infinite;
+  perspective: 1200px;
+  perspective-origin: 50% 0%;
 
   @media (min-width: 640px) {
-    width: $w-lg;
-    height: $h-lg;
+    width: $env-w-lg;
+    height: $env-h-lg + $flap-h-lg;
   }
 }
 
-// ─── Back face (visible behind open flap) ───────────────────────
-.env-back {
+// ─── Base rectangle (= .base in CodePen) ────────────────────────
+// Sits at the bottom of the wrapper, is the main envelope body
+.env-base {
   position: absolute;
-  inset: 0;
-  background: $env-fold;
-  border-radius: 4px 4px 6px 6px;
-  box-shadow:
-    0 28px 70px rgba(0,0,0,0.32),
-    0 8px 24px  rgba(0,0,0,0.18);
-  z-index: 0;
-}
-
-// ─── Fold panels (left / right / bottom triangles) ──────────────
-// These sit on top of env-back but below the letter & flap,
-// recreating the classic envelope diamond-fold seam.
-.env-panel {
-  position: absolute;
-  z-index: 2;
-  pointer-events: none;
-}
-
-.env-left {
-  left: 0; top: 0;
-  width: 0; height: 0;
-  border-style: solid;
-  border-width: $h $w*0.5 0 0;
-  border-color: $env-fold transparent transparent transparent;
-
-  @media (min-width: 640px) {
-    border-width: $h-lg $w-lg*0.5 0 0;
-  }
-}
-
-.env-right {
-  right: 0; top: 0;
-  width: 0; height: 0;
-  border-style: solid;
-  border-width: $h 0 0 $w*0.5;
-  border-color: $env-shadow transparent transparent transparent;
-
-  @media (min-width: 640px) {
-    border-width: $h-lg 0 0 $w-lg*0.5;
-  }
-}
-
-.env-bottom-tri {
-  bottom: 0; left: 0;
-  width: 0; height: 0;
-  border-style: solid;
-  border-width: 0 $w*0.5 $h*0.56 $w*0.5;
-  border-color: transparent transparent $env-cream transparent;
-
-  @media (min-width: 640px) {
-    border-width: 0 $w-lg*0.5 $h-lg*0.56 $w-lg*0.5;
-  }
-}
-
-// ─── Letter ─────────────────────────────────────────────────────
-.letter {
-  position: absolute;
+  bottom: 0;
   left: 50%;
+  transform: translateX(-50%);
+  width: $env-w;
+  height: $env-h;
+  background-color: $env-base;
+  z-index: 1;
+  box-shadow: 0 56px 72px -30px rgba(40, 28, 80, 0.55);
+
+  @media (min-width: 640px) {
+    width: $env-w-lg;
+    height: $env-h-lg;
+  }
+}
+
+// ─── Card / letter (= .card in CodePen) ─────────────────────────
+// Starts inside the envelope body, animates upward in two steps
+.env-card {
+  position: absolute;
   bottom: 10px;
-  width: 82%;
-  height: 84%;
-  background: linear-gradient(165deg, #fff 0%, #fdfaf4 100%);
-  border-radius: 4px;
-  display: none;
+  left: 50%;
+  transform: translateX(-50%);
+  width: $card-w;
+  height: $card-h;
+  background: linear-gradient(160deg, #ffffff 0%, #f5f3fb 100%);
+  border-radius: 5px;
+  z-index: 2; // above base, below SVG panels and flap initially
+  display: none; // shown by GSAP
   flex-direction: column;
   align-items: center;
   justify-content: center;
   text-align: center;
-  padding: 1rem 1.4rem;
+  padding: 1.2rem 1.6rem;
   box-sizing: border-box;
-  gap: 0.45rem;
-  z-index: 1;
-  box-shadow:
-    0 2px 12px rgba(0,0,0,0.14),
-    inset 0 1px 0 rgba(255,255,255,0.9);
+  gap: 0.5rem;
+  box-shadow: 0 2px 5px 0 rgba(120, 116, 168, 0.42);
+
+  @media (min-width: 640px) {
+    width: $card-w-lg;
+    height: $card-h-lg;
+    bottom: 14px;
+  }
 }
 
 .letter-name {
   font-family: 'Great Vibes', cursive;
-  font-size: 2.2rem;
-  color: #6b7bb0;
+  font-size: 2.4rem;
+  color: #555075;
   margin: 0;
   line-height: 1.1;
 
-  @media (min-width: 640px) { font-size: 3rem; }
+  @media (min-width: 640px) { font-size: 3.2rem; }
 }
 
 .letter-divider {
-  width: 50%;
+  width: 48%;
   height: 1px;
-  background: rgba(107,123,176,0.22);
+  background: rgba(85, 80, 117, 0.2);
   margin: 0.15rem 0;
 }
 
@@ -192,64 +167,56 @@ $h-lg: 280px;
   font-size: 0.68rem;
   letter-spacing: 0.18em;
   text-transform: uppercase;
-  color: rgba(107,123,176,0.65);
+  color: rgba(85, 80, 117, 0.6);
   margin: 0;
 
   @media (min-width: 640px) { font-size: 0.82rem; }
 }
 
-// ─── Flap ───────────────────────────────────────────────────────
-.env-flap {
+// ─── SVG panels (left + right fold triangles) ───────────────────
+// Like the <svg class="env"> in CodePen — sits on top of the card
+.env-svg {
   position: absolute;
-  top: 0; left: 0;
-  width: 100%;
-  height: 100%;
-  clip-path: polygon(0% 0%, 100% 0%, 50% 52%);
-  background: linear-gradient(175deg, $flap-color 0%, darken($flap-color, 6%) 100%);
-  transform-origin: 50% 0%;
-  transform: rotateX(0deg);
-  backface-visibility: hidden;
-  -webkit-backface-visibility: hidden;
-  z-index: 3;
-
-  &::after {
-    content: '';
-    position: absolute;
-    top: 0; left: 0; right: 0;
-    height: 2px;
-    background: rgba(0,0,0,0.06);
-    pointer-events: none;
-  }
-}
-
-// ─── Wax seal — absolutely centered inside the visible triangle ──
-// The triangle apex is at y=52%, centroid ≈ y=17%. Placing at 18%
-// puts it visually in the upper-center of the flap.
-.flap-seal {
-  position: absolute;
+  bottom: 0;
   left: 50%;
-  top: 18%;
-  transform: translate(-50%, 0);
-  width: 22px;
-  height: 22px;
-  border-radius: 50%;
-  background: radial-gradient(circle at 38% 36%, lighten($seal, 14%), $seal);
-  box-shadow:
-    0 2px 6px rgba(0,0,0,0.25),
-    inset 0 1px 0 rgba(255,255,255,0.35);
+  transform: translateX(-50%);
+  width: $env-w;
+  height: $env-h;
+  z-index: 3;
   pointer-events: none;
 
   @media (min-width: 640px) {
-    width: 28px;
-    height: 28px;
+    width: $env-w-lg;
+    height: $env-h-lg;
+  }
+}
+
+// ─── Flap (= .top in CodePen) ───────────────────────────────────
+// Downward-pointing triangle, starts rotated 180° on X (folded down/closed),
+// opens by rotating back to 0° — then z-index drops below card
+.env-flap {
+  position: absolute;
+  top: 0;
+  left: 50%;
+  transform: translateX(-50%) rotateX(180deg);
+  transform-origin: center bottom;
+  clip-path: polygon(50% 0%, 0% 100%, 100% 100%);
+  width: $env-w;
+  height: $flap-h;
+  background-color: $flap-color;
+  z-index: 4;
+  backface-visibility: hidden;
+  -webkit-backface-visibility: hidden;
+  cursor: pointer;
+
+  @media (min-width: 640px) {
+    width: $env-w-lg;
+    height: $flap-h-lg;
   }
 }
 
 // ─── Hint ───────────────────────────────────────────────────────
-.hint-area {
-  display: flex;
-  align-items: center;
-}
+.hint-area { display: flex; align-items: center; }
 
 .hint-text {
   font-family: 'Cormorant Garamond', Georgia, serif;
@@ -264,11 +231,6 @@ $h-lg: 280px;
 @keyframes blobPulse {
   0%,100% { transform: scale(1);    opacity: 0.85; }
   50%      { transform: scale(1.1); opacity: 1;    }
-}
-
-@keyframes envFloat {
-  0%,100% { transform: translateY(0);   }
-  50%     { transform: translateY(-8px); }
 }
 
 @keyframes hintFloat {
