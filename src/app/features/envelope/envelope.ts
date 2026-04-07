@@ -143,11 +143,13 @@ export class EnvelopePage implements AfterViewInit, OnDestroy {
 
     const letter = this.letterRef.nativeElement;
     letter.style.display = 'flex';
+    // Bring letter above all envelope panels before animating
+    gsap.set(letter, { zIndex: 20 });
 
     const isMobile = window.innerWidth < 640;
     const targetY = isMobile ? -128 : -158;
 
-    gsap.set(letter, { xPercent: -50, y: 0, opacity: 0 });
+    gsap.set(letter, { zIndex: 20, xPercent: -50, y: 0, opacity: 0 });
     gsap.to(letter, {
       xPercent: -50,
       y: targetY,
