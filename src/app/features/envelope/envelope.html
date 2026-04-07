@@ -2,45 +2,37 @@
 
   <div class="envelope-scene">
 
-    <!-- Decorative blobs -->
     <div class="blob blob--tl"></div>
     <div class="blob blob--tr"></div>
     <div class="blob blob--bl"></div>
     <div class="blob blob--br"></div>
 
-    <!-- Center content -->
     <div class="scene-center">
 
-      <!-- Envelope (perspective container + interactive element) -->
-      <div class="envelope"
-           (pointerdown)="onEnvelopePointerDown($event)">
+      <div class="envelope" (pointerdown)="onEnvelopePointerDown($event)">
 
-        <!-- Envelope back interior (visible when flap opens) -->
-        <div class="envelope-interior"></div>
+        <!-- Back face (shows through top-center triangle when flap opens) -->
+        <div class="env-back"></div>
 
-        <!-- Envelope body (cream front face, higher z-index → covers letter) -->
-        <div class="envelope-body">
-          <svg class="seam-svg" viewBox="0 0 100 100" preserveAspectRatio="none" aria-hidden="true">
-            <line x1="0"   y1="100" x2="50" y2="55" stroke="rgba(0,0,0,0.07)" stroke-width="0.6"/>
-            <line x1="100" y1="100" x2="50" y2="55" stroke="rgba(0,0,0,0.07)" stroke-width="0.6"/>
-            <line x1="0"   y1="0"   x2="50" y2="45" stroke="rgba(0,0,0,0.05)" stroke-width="0.6"/>
-            <line x1="100" y1="0"   x2="50" y2="45" stroke="rgba(0,0,0,0.05)" stroke-width="0.6"/>
-          </svg>
-        </div>
-
-        <!-- Letter (behind envelope body, emerges upward when open) -->
+        <!-- Letter slides up from inside -->
         <div class="letter" #letter>
           <p class="letter-name">Michela</p>
           <div class="letter-divider"></div>
           <p class="letter-tagline">ti aspetto per festeggiare</p>
         </div>
 
-        <!-- Flap (3D rotating triangle) -->
-        <div class="flap" #flap></div>
+        <!-- Front fold panels: create the classic envelope diamond seam lines -->
+        <div class="env-panel env-left"></div>
+        <div class="env-panel env-right"></div>
+        <div class="env-panel env-bottom-tri"></div>
+
+        <!-- Flap with small wax-seal dot -->
+        <div class="env-flap" #flap>
+          <div class="flap-seal"></div>
+        </div>
 
       </div>
 
-      <!-- Hint text -->
       <div class="hint-area">
         @if (isTouchDevice()) {
           <p class="hint-text">↑ scorri su per aprire</p>

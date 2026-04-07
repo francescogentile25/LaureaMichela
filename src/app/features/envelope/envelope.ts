@@ -166,7 +166,7 @@ export class EnvelopePage implements AfterViewInit, OnDestroy {
               onComplete: () => { this.router.navigate(['/rsvp']); },
             });
           });
-        }, 2500);
+        }, 1200);
       },
     });
   }
