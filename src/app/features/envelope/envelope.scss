@@ -13,7 +13,7 @@ $env-h-lg: 265px;
 
 // ─── Page background ────────────────────────────────────────────
 .page-bg {
-  min-height: 100vh;
+  min-height: 100dvh;
   background: linear-gradient(140deg, #7997d8 0%, #94afe5 52%, #7896d6 100%);
   display: flex;
   align-items: center;
@@ -39,7 +39,7 @@ $env-h-lg: 265px;
 .envelope-scene {
   position: relative;
   width: 100%;
-  min-height: 100vh;
+  min-height: 100dvh;
   display: flex;
   align-items: center;
   justify-content: center;
