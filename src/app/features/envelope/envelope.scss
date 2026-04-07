@@ -1,27 +1,8 @@
-// ─── Noise texture ──────────────────────────────────────────────
-$noise: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='200' height='200'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='200' height='200' filter='url(%23n)'/%3E%3C/svg%3E");
-
-// ─── Envelope dimensions ────────────────────────────────────────
-// Replicate CodePen proportions: 330×199 envelope, 150px flap height
-$env-w:      320px;
-$env-h:      196px;
-$flap-h:     146px;
-$card-w:     300px;
-$card-h:     182px;
-
-$env-w-lg:   440px;
-$env-h-lg:   268px;
-$flap-h-lg:  200px;
-$card-w-lg:  412px;
-$card-h-lg:  250px;
-
-// ─── Colors (match CodePen palette, adapted to app blue theme) ──
-$env-base:   #6d68a0;   // rect bottom — slightly lighter purple
-$env-left:   #7874a8;   // left triangle (lighter)
-$env-right:  #655f96;   // right triangle (darker)
-$flap-color: #7874a8;   // flap triangle
-$card-bg:    #d8d7e6;   // card background
-$seal:       #a89fc5;
+// ─── Colors ─────────────────────────────────────────────────────
+$env-body:   #7874a8;   // main envelope color
+$env-dark:   #655f96;   // slightly darker (fold triangles)
+$env-light:  #8f8bc0;   // slightly lighter (flap face)
+$card-bg:    #d8d7e6;
 $blob:       rgba(255,255,255,0.15);
 $blob-sm:    rgba(255,255,255,0.10);
 
@@ -34,18 +15,6 @@ $blob-sm:    rgba(255,255,255,0.10);
   justify-content: center;
   overflow: hidden;
   position: relative;
-
-  &::before {
-    content: '';
-    position: fixed;
-    inset: 0;
-    background-image: $noise;
-    background-size: 200px 200px;
-    opacity: 0.20;
-    mix-blend-mode: soft-light;
-    pointer-events: none;
-    z-index: 999;
-  }
 }
 
 // ─── Scene ──────────────────────────────────────────────────────
@@ -66,10 +35,10 @@ $blob-sm:    rgba(255,255,255,0.10);
   pointer-events: none;
   animation: blobPulse 5s ease-in-out infinite;
 }
-.blob--tl { width: 260px; height: 260px; top: -90px;  left: -90px;  background: $blob; }
-.blob--tr { width: 180px; height: 180px; top: -55px;  right: -55px; background: $blob-sm; animation-delay: .5s; }
-.blob--bl { width: 210px; height: 210px; bottom: -70px; left: -65px; background: $blob-sm; animation-delay: 1s; }
-.blob--br { width: 150px; height: 150px; bottom: -50px; right: -50px; background: $blob; animation-delay: .3s; }
+.blob--tl { width: 260px; height: 260px; top: -90px;   left: -90px;   background: $blob; }
+.blob--tr { width: 180px; height: 180px; top: -55px;   right: -55px;  background: $blob-sm; animation-delay: .5s; }
+.blob--bl { width: 210px; height: 210px; bottom: -70px; left: -65px;  background: $blob-sm; animation-delay: 1s; }
+.blob--br { width: 150px; height: 150px; bottom: -50px; right: -50px; background: $blob;    animation-delay: .3s; }
 
 // ─── Scene center ───────────────────────────────────────────────
 .scene-center {
@@ -79,86 +48,100 @@ $blob-sm:    rgba(255,255,255,0.10);
   gap: 2.4rem;
 }
 
-// ─── Envelope wrapper — perspective root ────────────────────────
-// Same structure as CodePen .container: fixed size, absolute children
-.env-wrapper {
+// ─── Envelope — square container ────────────────────────────────
+.envelope {
   position: relative;
-  width: $env-w;
-  height: $env-h + $flap-h; // total height = body + flap headroom
+  width: 280px;
+  height: 280px;
+  background: $env-body;
+  border-radius: 0 0 4px 4px;
   cursor: pointer;
   user-select: none;
   touch-action: none;
   perspective: 1200px;
-  perspective-origin: 50% 0%;
+  transform-style: preserve-3d;
+  box-shadow: 0 40px 60px -20px rgba(40, 28, 80, 0.5);
+
+  // V-fold left triangle
+  &::before {
+    content: '';
+    display: block;
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    z-index: 2;
+    width: 0;
+    height: 0;
+    border-style: solid;
+    border-width: 258px 0 0 265px;
+    border-color: transparent transparent transparent $env-dark;
+  }
+
+  // V-fold right triangle
+  &::after {
+    content: '';
+    display: block;
+    position: absolute;
+    bottom: 0;
+    right: 0;
+    z-index: 2;
+    width: 0;
+    height: 0;
+    border-style: solid;
+    border-width: 0 0 258px 265px;
+    border-color: transparent transparent $env-dark transparent;
+  }
 
   @media (min-width: 640px) {
-    width: $env-w-lg;
-    height: $env-h-lg + $flap-h-lg;
+    width: 360px;
+    height: 360px;
+
+    &::before {
+      border-width: 332px 0 0 341px;
+    }
+    &::after {
+      border-width: 0 0 332px 341px;
+    }
   }
 }
 
-// ─── Base rectangle (= .base in CodePen) ────────────────────────
-// Sits at the bottom of the wrapper, is the main envelope body
-.env-base {
-  position: absolute;
-  bottom: 0;
-  left: 50%;
-  transform: translateX(-50%);
-  width: $env-w;
-  height: $env-h;
-  background-color: $env-base;
-  z-index: 1;
-  box-shadow: 0 56px 72px -30px rgba(40, 28, 80, 0.55);
-
-  @media (min-width: 640px) {
-    width: $env-w-lg;
-    height: $env-h-lg;
-  }
-}
-
-// ─── Card / letter (= .card in CodePen) ─────────────────────────
-// Starts inside the envelope body, animates upward in two steps
+// ─── Letter card ────────────────────────────────────────────────
 .env-card {
-  position: absolute;
-  bottom: 10px;
-  left: 50%;
-  transform: translateX(-50%);
-  width: $card-w;
-  height: $card-h;
   background: linear-gradient(160deg, #ffffff 0%, #f5f3fb 100%);
-  border-radius: 5px;
-  z-index: 2; // above base, below SVG panels and flap initially
-  display: none; // shown by GSAP
+  position: absolute;
+  left: 0;
+  bottom: 0;
+  width: 70%;
+  height: 85%;
+  padding: 10px 20px;
+  transform: translateX(21%);
+  z-index: 1;
+  display: none;
   flex-direction: column;
   align-items: center;
   justify-content: center;
   text-align: center;
-  padding: 1.2rem 1.6rem;
-  box-sizing: border-box;
   gap: 0.5rem;
+  box-sizing: border-box;
+  border-radius: 3px;
   box-shadow: 0 2px 5px 0 rgba(120, 116, 168, 0.42);
-
-  @media (min-width: 640px) {
-    width: $card-w-lg;
-    height: $card-h-lg;
-    bottom: 14px;
-  }
+  transition: box-shadow 0.3s ease;
 }
 
 .letter-name {
   font-family: 'Great Vibes', cursive;
-  font-size: 2.4rem;
+  font-size: 2.2rem;
   color: #555075;
   margin: 0;
   line-height: 1.1;
 
-  @media (min-width: 640px) { font-size: 3.2rem; }
+  @media (min-width: 640px) { font-size: 3rem; }
 }
 
 .letter-divider {
   width: 48%;
   height: 1px;
-  background: rgba(85, 80, 117, 0.2);
+  background: rgba(85, 80, 117, 0.25);
   margin: 0.15rem 0;
 }
 
@@ -173,46 +156,87 @@ $blob-sm:    rgba(255,255,255,0.10);
   @media (min-width: 640px) { font-size: 0.82rem; }
 }
 
-// ─── SVG panels (left + right fold triangles) ───────────────────
-// Like the <svg class="env"> in CodePen — sits on top of the card
-.env-svg {
+// ─── Flap containers ────────────────────────────────────────────
+// Each clips the rotated diamond square inside it
+.flap-container {
+  border-radius: 4px;
+  overflow: hidden;
   position: absolute;
-  bottom: 0;
-  left: 50%;
-  transform: translateX(-50%);
-  width: $env-w;
-  height: $env-h;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
   z-index: 3;
-  pointer-events: none;
+}
+
+// Outer flap: opens (rotateX 0→180) — perspective applied here
+.flap-outer {
+  transform-origin: 50% 0%;
+  transform-style: preserve-3d;
+  perspective: 1200px;
+  z-index: 4;
+}
+
+// Inner flap: permanently shows the "underside" of the diamond area
+.flap-inner {
+  transform: rotateX(180deg);
+  border-radius: 0 0 4px 4px;
+  overflow: hidden;
+  z-index: 3;
+}
+
+// ─── Diamond flap shape ─────────────────────────────────────────
+// A square rotated 45deg positioned to show only the top triangle
+.flap {
+  background: $env-light;
+  border: 1px solid $env-body;
+  border-radius: 40px;
+  overflow: hidden;
+  width: 262px;
+  height: 262px;
+  position: absolute;
+  top: -50%;
+  left: 50%;
+  margin: -18px 0 0 -132px;
+  transform: rotateZ(45deg);
+  transform-style: preserve-3d;
 
   @media (min-width: 640px) {
-    width: $env-w-lg;
-    height: $env-h-lg;
+    width: 336px;
+    height: 336px;
+    margin: -22px 0 0 -169px;
   }
 }
 
-// ─── Flap (= .top in CodePen) ───────────────────────────────────
-// Downward-pointing triangle, starts rotated 180° on X (folded down/closed),
-// opens by rotating back to 0° — then z-index drops below card
-.env-flap {
-  position: absolute;
-  top: 0;
-  left: 50%;
-  transform: translateX(-50%) rotateX(180deg);
-  transform-origin: center bottom;
-  clip-path: polygon(50% 0%, 0% 100%, 100% 100%);
-  width: $env-w;
-  height: $flap-h;
-  background-color: $flap-color;
-  z-index: 4;
+// Inner face: the darker inside visible when flap folds back
+.flap-inner-face {
+  background: $env-dark;
   backface-visibility: hidden;
   -webkit-backface-visibility: hidden;
-  cursor: pointer;
+  border-radius: 0 0 40px 0;
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 92%;
+  height: 92%;
+}
 
-  @media (min-width: 640px) {
-    width: $env-w-lg;
-    height: $flap-h-lg;
-  }
+// Inner flap's flap style (slightly different border-radius)
+.flap-inner .flap {
+  border-radius: 40px 40px 80px 40px;
+  border: 1px solid $env-body;
+  margin-top: 20px;
+}
+
+// ─── Bow SVG ────────────────────────────────────────────────────
+.env-bow {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  z-index: 10;
+  width: 75%;
+  pointer-events: none;
 }
 
 // ─── Hint ───────────────────────────────────────────────────────
@@ -222,18 +246,18 @@ $blob-sm:    rgba(255,255,255,0.10);
   font-family: 'Cormorant Garamond', Georgia, serif;
   font-size: 0.92rem;
   letter-spacing: 0.1em;
-  color: rgba(255,255,255,0.78);
+  color: rgba(255, 255, 255, 0.78);
   margin: 0;
   animation: hintFloat 2.4s ease-in-out infinite;
 }
 
 // ─── Keyframes ──────────────────────────────────────────────────
 @keyframes blobPulse {
-  0%,100% { transform: scale(1);    opacity: 0.85; }
-  50%      { transform: scale(1.1); opacity: 1;    }
+  0%, 100% { transform: scale(1);    opacity: 0.85; }
+  50%       { transform: scale(1.1); opacity: 1;    }
 }
 
 @keyframes hintFloat {
-  0%,100% { transform: translateY(0);    opacity: 0.78; }
-  50%     { transform: translateY(-5px); opacity: 1;    }
+  0%, 100% { transform: translateY(0);    opacity: 0.78; }
+  50%      { transform: translateY(-5px); opacity: 1;    }
 }

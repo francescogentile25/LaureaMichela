@@ -9,29 +9,59 @@
 
     <div class="scene-center">
 
-      <div class="env-wrapper" (pointerdown)="onEnvelopePointerDown($event)">
+      <!-- Square envelope — mirrors the original CodePen structure -->
+      <div class="envelope" #envelopeEl
+           (pointerdown)="onEnvelopePointerDown($event)">
 
-        <!-- Shadow + body background -->
-        <div class="env-base"></div>
-
-        <!-- Letter card (starts hidden behind base/svg) -->
+        <!-- Letter card sits inside the envelope body -->
         <div class="env-card" #letter>
           <p class="letter-name">Michela</p>
           <div class="letter-divider"></div>
           <p class="letter-tagline">ti aspetto per festeggiare</p>
         </div>
 
-        <!-- SVG: left and right triangular fold panels -->
-        <svg class="env-svg" viewBox="0 0 660 290" fill="none" aria-hidden="true" preserveAspectRatio="none">
-          <path d="M330 145 L0 290 L0 0 Z"   fill="#5D5790"/>
-          <path d="M330 145 L660 290 L660 0 Z" fill="#555084"/>
-        </svg>
+        <!-- Outer flap: clips the diamond shape, rotates on X to open -->
+        <div class="flap-container flap-outer" #flapOuter>
+          <div class="flap">
+            <!-- darker inside face shown when flap folds over -->
+            <div class="flap-inner-face"></div>
+          </div>
+        </div>
 
-        <!-- Flap: downward-pointing triangle, rotates backward to open -->
-        <div class="env-flap" #flap></div>
+        <!-- Inner flap: permanently rotated 180°, visible when outer flap opens -->
+        <div class="flap-container flap-inner">
+          <div class="flap"></div>
+        </div>
+
+        <!-- Ribbon bow: splits apart as the flap opens -->
+        <svg class="env-bow" #bow
+             viewBox="0 0 220 70" fill="none"
+             xmlns="http://www.w3.org/2000/svg">
+          <!-- left half of bow -->
+          <g id="bow-left">
+            <path d="M110 35 Q80 12 25 8"  stroke="rgba(255,255,255,0.65)" stroke-width="5" stroke-linecap="round"/>
+            <path d="M110 35 Q80 58 25 62" stroke="rgba(255,255,255,0.65)" stroke-width="5" stroke-linecap="round"/>
+            <ellipse cx="68" cy="35" rx="24" ry="16"
+                     stroke="rgba(255,255,255,0.72)" stroke-width="4"
+                     fill="rgba(255,255,255,0.10)"
+                     transform="rotate(-8 68 35)"/>
+          </g>
+          <!-- right half of bow -->
+          <g id="bow-right">
+            <path d="M110 35 Q140 12 195 8"  stroke="rgba(255,255,255,0.65)" stroke-width="5" stroke-linecap="round"/>
+            <path d="M110 35 Q140 58 195 62" stroke="rgba(255,255,255,0.65)" stroke-width="5" stroke-linecap="round"/>
+            <ellipse cx="152" cy="35" rx="24" ry="16"
+                     stroke="rgba(255,255,255,0.72)" stroke-width="4"
+                     fill="rgba(255,255,255,0.10)"
+                     transform="rotate(8 152 35)"/>
+          </g>
+          <!-- central knot -->
+          <circle cx="110" cy="35" r="8" fill="rgba(255,255,255,0.88)"/>
+        </svg>
 
       </div>
 
+      <!-- Interaction hint -->
       <div class="hint-area">
         @if (isTouchDevice()) {
           <p class="hint-text">↑ scorri su per aprire</p>
