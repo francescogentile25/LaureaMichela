@@ -24,7 +24,7 @@ export class EnvelopePage implements AfterViewInit, OnDestroy {
   @ViewChild('envelopeEl') envelopeRef!: ElementRef<HTMLElement>;
   @ViewChild('flapOuter')  flapRef!:     ElementRef<HTMLElement>;
   @ViewChild('letter')     letterRef!:   ElementRef<HTMLElement>;
-  @ViewChild('bow')        bowRef!:       ElementRef<SVGElement>;
+  @ViewChild('stringSvg')   stringSvgRef!: ElementRef<SVGElement>;
 
   readonly isTouchDevice = signal(false);
   readonly isFullyOpen   = signal(false);
@@ -51,9 +51,6 @@ export class EnvelopePage implements AfterViewInit, OnDestroy {
     gsap.from('.envelope', { opacity: 0, y: 60, scale: 0.88, duration: 1, ease: 'power3.out', delay: 0.3 });
     gsap.set('.hint-area', { opacity: 0 });
     gsap.to('.hint-area', { opacity: 1, duration: 0.6, delay: 1.4 });
-
-    // Bow idle animation — starts after entrance
-    this.startBowIdleAnimation();
 
     window.addEventListener('pointermove', this.onMoveBound, { passive: false });
     window.addEventListener('pointerup',   this.onUpBound);
@@ -140,77 +137,12 @@ export class EnvelopePage implements AfterViewInit, OnDestroy {
     });
   }
 
-  private startBowIdleAnimation(): void {
-    const bow      = this.bowRef.nativeElement;
-    const bowLeft  = bow.querySelector('#bow-left');
-    const bowRight = bow.querySelector('#bow-right');
-    const knot     = bow.querySelector('circle');
-
-    // Whole bow: gentle float
-    gsap.to(bow, {
-      y: -6,
-      duration: 2.2,
-      ease: 'sine.inOut',
-      repeat: -1,
-      yoyo: true,
-      delay: 1.2,
-    });
-
-    // Left ribbon loop: slight counter-clockwise flutter
-    if (bowLeft) {
-      gsap.to(bowLeft, {
-        rotation: -5,
-        x: -3,
-        duration: 2.0,
-        ease: 'sine.inOut',
-        repeat: -1,
-        yoyo: true,
-        transformOrigin: '110px 35px',
-        delay: 1.4,
-      });
-    }
-
-    // Right ribbon loop: slight clockwise flutter (slightly different timing)
-    if (bowRight) {
-      gsap.to(bowRight, {
-        rotation: 5,
-        x: 3,
-        duration: 2.4,
-        ease: 'sine.inOut',
-        repeat: -1,
-        yoyo: true,
-        transformOrigin: '110px 35px',
-        delay: 1.6,
-      });
-    }
-
-    // Knot: gentle pulse
-    if (knot) {
-      gsap.to(knot, {
-        scale: 1.15,
-        duration: 1.8,
-        ease: 'sine.inOut',
-        repeat: -1,
-        yoyo: true,
-        transformOrigin: '110px 35px',
-        delay: 1.2,
-      });
-    }
-  }
-
   private afterFlapOpen(): void {
     this.isFullyOpen.set(true);
     this.envelopeRef.nativeElement.classList.remove('env-opening');
     gsap.to('.hint-area', { opacity: 0, duration: 0.2 });
 
     const env = this.envelopeRef.nativeElement;
-    const bow = this.bowRef.nativeElement;
-
-    // Stop bow idle animation before splitting
-    gsap.killTweensOf(bow);
-    gsap.killTweensOf(bow.querySelector('#bow-left'));
-    gsap.killTweensOf(bow.querySelector('#bow-right'));
-    gsap.killTweensOf(bow.querySelector('circle'));
 
     // Tilt envelope (like original CodePen)
     gsap.to(env, {
@@ -221,19 +153,17 @@ export class EnvelopePage implements AfterViewInit, OnDestroy {
       ease: 'power2.inOut',
     });
 
-    // Split bow halves apart
-    const bowLeft  = bow.querySelector('#bow-left');
-    const bowRight = bow.querySelector('#bow-right');
-    if (bowLeft && bowRight) {
-      gsap.to(bowLeft,  { x: -55, y: -10, opacity: 0, rotation: -20, duration: 0.5, ease: 'power2.in', transformOrigin: '100% 50%' });
-      gsap.to(bowRight, { x:  55, y: -10, opacity: 0, rotation:  20, duration: 0.5, ease: 'power2.in', transformOrigin: '0% 50%' });
-      gsap.to(bow.querySelector('circle'), { scale: 0, opacity: 0, duration: 0.25, delay: 0.15, transformOrigin: '50% 50%' });
+    // Trigger SMIL string-untie animation
+    const svg = this.stringSvgRef.nativeElement;
+    const morphStart = svg.querySelector('#morphoneleft') as SVGAnimateElement | null;
+    if (morphStart) {
+      morphStart.beginElement();
     }
 
-    // Reveal the card after short delay
+    // Reveal the card after the string animation (~0.8s untie)
     setTimeout(() => {
       this.zone.run(() => { this.revealCard(); });
-    }, 350);
+    }, 600);
   }
 
   private revealCard(): void {
