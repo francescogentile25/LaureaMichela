@@ -13,11 +13,50 @@
       <div class="envelope" #envelopeEl
            (pointerdown)="onEnvelopePointerDown($event)">
 
-        <!-- Letter card sits inside the envelope body -->
+        <!-- Letter card — miniature preview of invitation-card -->
         <div class="env-card" #letter>
-          <p class="letter-name">Michela</p>
-          <div class="letter-divider"></div>
-          <p class="letter-tagline">ti aspetto per festeggiare</p>
+
+          <!-- Mini graduation cap -->
+          <svg class="mini-cap" viewBox="0 0 90 68" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <polygon points="45,4 86,22 45,40 4,22" fill="white"/>
+            <path d="M20 28 L20 46 Q20 58 45 58 Q70 58 70 46 L70 28" fill="white" opacity="0.72"/>
+            <line x1="86" y1="22" x2="86" y2="40" stroke="white" stroke-width="3" stroke-linecap="round"/>
+            <circle cx="86" cy="43" r="3.5" fill="white"/>
+            <line x1="86" y1="46" x2="86" y2="54" stroke="white" stroke-width="2" stroke-linecap="round"/>
+            <line x1="82" y1="54" x2="90" y2="54" stroke="white" stroke-width="1.5" stroke-linecap="round"/>
+          </svg>
+
+          <p class="mini-label">Master in</p>
+
+          <p class="mini-title">Organizzazione e Gestione<br>delle Risorse Umane</p>
+
+          <p class="mini-cursive">Ti aspetto per festeggiare con me</p>
+
+          <div class="mini-divider"></div>
+
+          <ul class="mini-info">
+            <li>Sabato 16 Maggio</li>
+            <li>ore 21:00</li>
+            <li>A casa di Nonna</li>
+          </ul>
+
+          <p class="mini-name">Michela</p>
+
+          <!-- Mini flower -->
+          <svg class="mini-flower" viewBox="0 0 50 70" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <ellipse cx="25" cy="13" rx="4" ry="8" fill="none" stroke="white" stroke-width="1.2" opacity="0.8"/>
+            <ellipse cx="25" cy="13" rx="4" ry="8" fill="none" stroke="white" stroke-width="1.2" opacity="0.8" transform="rotate(45 25 25)"/>
+            <ellipse cx="25" cy="13" rx="4" ry="8" fill="none" stroke="white" stroke-width="1.2" opacity="0.8" transform="rotate(90 25 25)"/>
+            <ellipse cx="25" cy="13" rx="4" ry="8" fill="none" stroke="white" stroke-width="1.2" opacity="0.8" transform="rotate(135 25 25)"/>
+            <ellipse cx="25" cy="13" rx="4" ry="8" fill="none" stroke="white" stroke-width="1.2" opacity="0.8" transform="rotate(180 25 25)"/>
+            <ellipse cx="25" cy="13" rx="4" ry="8" fill="none" stroke="white" stroke-width="1.2" opacity="0.8" transform="rotate(225 25 25)"/>
+            <ellipse cx="25" cy="13" rx="4" ry="8" fill="none" stroke="white" stroke-width="1.2" opacity="0.8" transform="rotate(270 25 25)"/>
+            <ellipse cx="25" cy="13" rx="4" ry="8" fill="none" stroke="white" stroke-width="1.2" opacity="0.8" transform="rotate(315 25 25)"/>
+            <circle cx="25" cy="25" r="4.5" fill="none" stroke="white" stroke-width="1.2" opacity="0.8"/>
+            <line x1="25" y1="30" x2="25" y2="58" stroke="white" stroke-width="1.2" stroke-linecap="round" opacity="0.8"/>
+            <path d="M25 46 Q18 42 16 36" stroke="white" stroke-width="1.2" stroke-linecap="round" fill="none" opacity="0.8"/>
+          </svg>
+
         </div>
 
         <!-- Outer flap: clips the diamond shape, rotates on X to open -->
