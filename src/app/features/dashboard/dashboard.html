@@ -5,10 +5,16 @@
       <h1 class="dashboard-title">Ciao Michela!</h1>
       <p class="dashboard-subtitle">Ecco chi ha confermato la presenza al tuo master</p>
     </div>
-    <button class="logout-btn" type="button" (click)="logout()">
-      <i class="pi pi-sign-out"></i>
-      <span>Esci</span>
-    </button>
+    <div class="header-actions">
+      <button class="share-btn" type="button" (click)="shareOnWhatsApp()">
+        <i class="pi pi-whatsapp"></i>
+        <span>Condividi invito</span>
+      </button>
+      <button class="logout-btn" type="button" (click)="logout()">
+        <i class="pi pi-sign-out"></i>
+        <span>Esci</span>
+      </button>
+    </div>
   </div>
 
   <div class="stats-grid">
@@ -62,6 +68,7 @@
     </div>
   }
 
+  <!-- ═══ LISTA RSVP CON FILTRI ═══ -->
   <div class="panel-card">
     <h2 class="panel-title list-title">Chi ha confermato</h2>
 
@@ -73,29 +80,119 @@
         <p>Ancora nessuna conferma. Condividi il link agli invitati!</p>
       </div>
     } @else {
-      <div class="rsvp-list">
-        @for (rsvp of rsvps(); track rsvp.id) {
-          <div class="rsvp-row">
-            <div class="avatar">
-              {{ rsvp.nome.charAt(0).toUpperCase() }}
-            </div>
-            <div class="rsvp-content">
-              <div class="rsvp-head">
-                <span class="rsvp-name">{{ rsvp.nome }}</span>
-                <p-tag
-                  [value]="rsvp.num_partecipanti + ' persona/e'"
-                  severity="secondary"
-                />
+
+      <!-- Barra filtri -->
+      <div class="filters-bar">
+        <div class="search-box">
+          <i class="pi pi-search"></i>
+          <input
+            type="text"
+            placeholder="Cerca per nome..."
+            [ngModel]="searchQuery()"
+            (ngModelChange)="searchQuery.set($event)"
+          />
+        </div>
+
+        <div class="filter-actions">
+          <button
+            class="filter-chip"
+            [class.filter-chip--active]="onlyWithMessage()"
+            (click)="onlyWithMessage.set(!onlyWithMessage())"
+          >
+            <i class="pi pi-comment"></i>
+            Solo con messaggio
+          </button>
+
+          <div class="sort-group">
+            <span class="sort-label">Ordina:</span>
+            <button
+              class="sort-chip"
+              [class.sort-chip--active]="sortBy() === 'date'"
+              (click)="sortBy.set('date')"
+            >
+              <i class="pi pi-calendar"></i> Data
+            </button>
+            <button
+              class="sort-chip"
+              [class.sort-chip--active]="sortBy() === 'nome'"
+              (click)="sortBy.set('nome')"
+            >
+              <i class="pi pi-sort-alpha-down"></i> Nome
+            </button>
+            <button
+              class="sort-chip"
+              [class.sort-chip--active]="sortBy() === 'partecipanti'"
+              (click)="sortBy.set('partecipanti')"
+            >
+              <i class="pi pi-users"></i> Persone
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Contatore risultati -->
+      @if (filteredRsvps().length !== rsvps().length) {
+        <p class="filter-count">
+          {{ filteredRsvps().length }} di {{ rsvps().length }} risultati
+        </p>
+      }
+
+      <!-- Lista -->
+      @if (filteredRsvps().length === 0) {
+        <div class="list-placeholder">
+          <i class="pi pi-search" style="font-size: 1.3rem; margin-bottom: 0.4rem"></i>
+          <p>Nessun risultato per questa ricerca</p>
+        </div>
+      } @else {
+        <div class="rsvp-list">
+          @for (rsvp of filteredRsvps(); track rsvp.id) {
+            <div class="rsvp-row">
+              <div class="avatar">
+                {{ rsvp.nome.charAt(0).toUpperCase() }}
               </div>
-              @if (rsvp.messaggio) {
-                <p class="rsvp-message">"{{ rsvp.messaggio }}"</p>
-              }
+              <div class="rsvp-content">
+                <div class="rsvp-head">
+                  <span class="rsvp-name">{{ rsvp.nome }}</span>
+                  <p-tag
+                    [value]="rsvp.num_partecipanti + ' persona/e'"
+                    severity="secondary"
+                  />
+                </div>
+                @if (rsvp.messaggio) {
+                  <p class="rsvp-message">"{{ rsvp.messaggio }}"</p>
+                }
+              </div>
+              <span class="rsvp-time">{{ rsvp.created_at | date: 'dd/MM HH:mm' }}</span>
             </div>
-            <span class="rsvp-time">{{ rsvp.created_at | date: 'dd/MM HH:mm' }}</span>
+          }
+        </div>
+      }
+    }
+  </div>
+
+  <!-- ═══ BACHECA MESSAGGI / GUESTBOOK ═══ -->
+  @if (guestMessages().length > 0) {
+    <div class="panel-card guestbook-panel">
+      <div class="panel-header">
+        <h2 class="panel-title">
+          <i class="pi pi-heart-fill guestbook-icon"></i>
+          Bacheca messaggi
+        </h2>
+        <span class="guestbook-count">{{ guestMessages().length }} messaggi</span>
+      </div>
+
+      <div class="guestbook-grid">
+        @for (msg of guestMessages(); track msg.id; let i = $index) {
+          <div class="postit" [style.--rotation]="(i % 5 - 2) + 'deg'">
+            <p class="postit-text">"{{ msg.messaggio }}"</p>
+            <div class="postit-footer">
+              <span class="postit-author">— {{ msg.nome }}</span>
+              <span class="postit-date">{{ msg.created_at | date: 'dd MMM' }}</span>
+            </div>
           </div>
         }
       </div>
-    }
-  </div>
+    </div>
+  }
 
 </div>

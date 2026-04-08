@@ -35,6 +35,32 @@
   color: var(--ink-muted);
 }
 
+.header-actions {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+}
+
+.share-btn {
+  border: 1px solid rgba(37, 211, 102, 0.4);
+  background: #25d366;
+  color: #fff;
+  border-radius: 999px;
+  padding: 0.55rem 1rem;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+
+  &:hover {
+    background: #20bd5a;
+    border-color: rgba(37, 211, 102, 0.7);
+    transform: translateY(-1px);
+  }
+}
+
 .logout-btn {
   border: 1px solid rgba(85, 120, 200, 0.35);
   background: #ffffffcc;
@@ -223,6 +249,260 @@
   background: #dce8ff;
 }
 
+/* ════════════════════════════════
+   FILTRI E RICERCA
+   ════════════════════════════════ */
+
+.filters-bar {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  margin-bottom: 1rem;
+}
+
+.search-box {
+  position: relative;
+  display: flex;
+  align-items: center;
+
+  i {
+    position: absolute;
+    left: 0.85rem;
+    color: #8da2ca;
+    font-size: 0.9rem;
+    pointer-events: none;
+  }
+
+  input {
+    width: 100%;
+    padding: 0.6rem 0.85rem 0.6rem 2.4rem;
+    border: 1px solid #c9d8f5;
+    border-radius: 999px;
+    background: #f0f4ff;
+    color: var(--ink);
+    font-size: 0.92rem;
+    outline: none;
+    transition: border-color 0.2s, box-shadow 0.2s;
+
+    &::placeholder {
+      color: #8da2ca;
+    }
+
+    &:focus {
+      border-color: var(--primary-mid);
+      box-shadow: 0 0 0 3px rgba(111, 144, 214, 0.15);
+    }
+  }
+}
+
+.filter-actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.filter-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  padding: 0.35rem 0.8rem;
+  border: 1px solid #c9d8f5;
+  border-radius: 999px;
+  background: #f0f4ff;
+  color: #5a7ab8;
+  font-size: 0.82rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+
+  &:hover {
+    border-color: var(--primary-mid);
+    background: #e4edff;
+  }
+
+  &--active {
+    background: var(--primary-dark);
+    color: #fff;
+    border-color: var(--primary-dark);
+
+    &:hover {
+      background: #4a6dba;
+      border-color: #4a6dba;
+    }
+  }
+}
+
+.sort-group {
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+  margin-left: auto;
+}
+
+.sort-label {
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: var(--ink-muted);
+  margin-right: 0.15rem;
+}
+
+.sort-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+  padding: 0.3rem 0.65rem;
+  border: 1px solid #d5dff5;
+  border-radius: 999px;
+  background: transparent;
+  color: #7b96c7;
+  font-size: 0.78rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+
+  &:hover {
+    background: #e8f0ff;
+    border-color: #b5c9f0;
+  }
+
+  &--active {
+    background: #e0eaff;
+    color: var(--primary-dark);
+    border-color: var(--primary-mid);
+  }
+}
+
+.filter-count {
+  margin: 0 0 0.75rem;
+  font-size: 0.82rem;
+  font-weight: 600;
+  color: var(--ink-muted);
+}
+
+/* ════════════════════════════════
+   BACHECA MESSAGGI / GUESTBOOK
+   ════════════════════════════════ */
+
+.guestbook-panel {
+  overflow: hidden;
+}
+
+.guestbook-icon {
+  color: #e07a8f;
+  margin-right: 0.3rem;
+  font-size: 0.95rem;
+}
+
+.guestbook-count {
+  font-size: 0.82rem;
+  font-weight: 600;
+  color: var(--ink-muted);
+  background: #edf2ff;
+  padding: 0.2rem 0.7rem;
+  border-radius: 999px;
+}
+
+.guestbook-grid {
+  display: grid;
+  grid-template-columns: repeat(1, 1fr);
+  gap: 1rem;
+  margin-top: 0.3rem;
+}
+
+.postit {
+  position: relative;
+  padding: 1.2rem 1.1rem 0.9rem;
+  border-radius: 0.25rem 0.25rem 1rem 1rem;
+  background: linear-gradient(165deg, #fff9e6 0%, #fff4cc 100%);
+  border: 1px solid rgba(220, 200, 120, 0.35);
+  box-shadow:
+    0 4px 16px rgba(180, 160, 80, 0.1),
+    0 1px 3px rgba(180, 160, 80, 0.08);
+  transform: rotate(var(--rotation, 0deg));
+  transition: transform 0.25s ease, box-shadow 0.25s ease;
+
+  // nastro adesivo in cima
+  &::before {
+    content: '';
+    position: absolute;
+    top: -6px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 3rem;
+    height: 12px;
+    background: rgba(200, 200, 200, 0.45);
+    border-radius: 2px;
+  }
+
+  &:hover {
+    transform: rotate(0deg) translateY(-3px);
+    box-shadow:
+      0 8px 24px rgba(180, 160, 80, 0.18),
+      0 2px 6px rgba(180, 160, 80, 0.1);
+  }
+}
+
+.postit-text {
+  margin: 0;
+  font-size: 0.92rem;
+  font-style: italic;
+  color: #5a4e2a;
+  line-height: 1.5;
+  word-break: break-word;
+}
+
+.postit-footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-top: 0.75rem;
+  padding-top: 0.55rem;
+  border-top: 1px dashed rgba(180, 160, 80, 0.25);
+}
+
+.postit-author {
+  font-weight: 700;
+  font-size: 0.85rem;
+  color: #7a6b3a;
+}
+
+.postit-date {
+  font-size: 0.75rem;
+  color: #a89960;
+}
+
+/* Colori alternati per i post-it */
+.postit:nth-child(3n + 2) {
+  background: linear-gradient(165deg, #edf7ff 0%, #d9edff 100%);
+  border-color: rgba(130, 170, 220, 0.3);
+  box-shadow:
+    0 4px 16px rgba(100, 140, 200, 0.1),
+    0 1px 3px rgba(100, 140, 200, 0.08);
+
+  .postit-text { color: #2e4a6a; }
+  .postit-author { color: #3d6a9e; }
+  .postit-date { color: #6a9cc8; }
+  .postit-footer { border-color: rgba(130, 170, 220, 0.25); }
+}
+
+.postit:nth-child(3n + 3) {
+  background: linear-gradient(165deg, #f0fff4 0%, #d9f5e3 100%);
+  border-color: rgba(120, 200, 150, 0.3);
+  box-shadow:
+    0 4px 16px rgba(100, 180, 130, 0.1),
+    0 1px 3px rgba(100, 180, 130, 0.08);
+
+  .postit-text { color: #2a5a3a; }
+  .postit-author { color: #3a7a52; }
+  .postit-date { color: #60a87a; }
+  .postit-footer { border-color: rgba(120, 200, 150, 0.25); }
+}
+
+/* ════════════════════════════════
+   RESPONSIVE
+   ════════════════════════════════ */
+
 @media (min-width: 640px) {
   .dashboard-page {
     padding: 2rem 1.75rem;
@@ -230,6 +510,25 @@
 
   .stats-grid {
     grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+
+  .guestbook-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .filters-bar {
+    flex-direction: row;
+    align-items: center;
+  }
+
+  .search-box {
+    max-width: 280px;
+  }
+}
+
+@media (min-width: 1024px) {
+  .guestbook-grid {
+    grid-template-columns: repeat(3, 1fr);
   }
 }
 
@@ -239,8 +538,19 @@
     align-items: flex-start;
   }
 
+  .header-actions {
+    flex-direction: column;
+    width: 100%;
+  }
+
+  .share-btn,
   .logout-btn {
     width: 100%;
     justify-content: center;
+  }
+
+  .sort-group {
+    margin-left: 0;
+    width: 100%;
   }
 }
