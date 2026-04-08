@@ -146,7 +146,10 @@
       } @else {
         <div class="rsvp-list">
           @for (rsvp of filteredRsvps(); track rsvp.id) {
-            <div class="rsvp-row">
+            <div
+              class="rsvp-row"
+              [class.rsvp-row--confirm]="confirmDeleteId() === rsvp.id"
+            >
               <div class="avatar">
                 {{ rsvp.nome.charAt(0).toUpperCase() }}
               </div>
@@ -162,7 +165,40 @@
                   <p class="rsvp-message">"{{ rsvp.messaggio }}"</p>
                 }
               </div>
-              <span class="rsvp-time">{{ rsvp.created_at | date: 'dd/MM HH:mm' }}</span>
+
+              <div class="rsvp-actions">
+                <span class="rsvp-time">{{ rsvp.created_at | date: 'dd/MM HH:mm' }}</span>
+
+                @if (confirmDeleteId() === rsvp.id) {
+                  <!-- Stato conferma -->
+                  <div class="delete-confirm">
+                    <span class="delete-confirm-label">Eliminare?</span>
+                    <button
+                      class="delete-confirm-btn delete-confirm-btn--yes"
+                      (click)="onDelete(rsvp.id)"
+                      [disabled]="deleting()"
+                    >
+                      <i class="pi pi-check"></i>
+                    </button>
+                    <button
+                      class="delete-confirm-btn delete-confirm-btn--no"
+                      (click)="cancelDelete()"
+                    >
+                      <i class="pi pi-times"></i>
+                    </button>
+                  </div>
+                } @else {
+                  <!-- Bottone cestino -->
+                  <button
+                    class="delete-btn"
+                    type="button"
+                    title="Elimina RSVP"
+                    (click)="onDelete(rsvp.id)"
+                  >
+                    <i class="pi pi-trash"></i>
+                  </button>
+                }
+              </div>
             </div>
           }
         </div>

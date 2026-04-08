@@ -28,6 +28,10 @@ export class Dashboard implements OnInit, OnDestroy {
   onlyWithMessage = signal(false);
   sortBy = signal<SortOption>('date');
 
+  // Eliminazione RSVP
+  confirmDeleteId = signal<string | null>(null);
+  deleting = signal(false);
+
   private unsubRsvp?: () => void;
   private unsubNotifications?: () => void;
 
@@ -112,6 +116,31 @@ export class Dashboard implements OnInit, OnDestroy {
     this.rsvpService.markAllNotificationsRead().subscribe({
       next: () => this.loadNotifications(),
     });
+  }
+
+  /** Primo click: mostra conferma. Secondo click: elimina. */
+  onDelete(id: string) {
+    if (this.confirmDeleteId() === id) {
+      this.deleting.set(true);
+      this.rsvpService.deleteRsvp(id).subscribe({
+        next: () => {
+          // Rimuovi subito dalla lista locale per feedback istantaneo
+          this.rsvps.update(list => list.filter(r => r.id !== id));
+          this.confirmDeleteId.set(null);
+          this.deleting.set(false);
+        },
+        error: () => {
+          this.confirmDeleteId.set(null);
+          this.deleting.set(false);
+        },
+      });
+    } else {
+      this.confirmDeleteId.set(id);
+    }
+  }
+
+  cancelDelete() {
+    this.confirmDeleteId.set(null);
   }
 
   shareOnWhatsApp() {

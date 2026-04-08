@@ -56,6 +56,16 @@ export class RsvpService {
     );
   }
 
+  deleteRsvp(id: string): Observable<void> {
+    return from(
+      this.supabase.client.from('rsvp').delete().eq('id', id)
+    ).pipe(
+      map(({ error }) => {
+        if (error) throw new Error(error.message);
+      })
+    );
+  }
+
   markAllNotificationsRead(): Observable<void> {
     return from(
       this.supabase.client.from('notifications').update({ read: true }).eq('read', false)
