@@ -32,254 +32,285 @@
     </div>
   </div>
 
+  <!-- ═══ NOTIFICHE ═══ -->
   @if (notifications().length > 0) {
     <div class="panel-card">
-      <div class="panel-header">
-        <h2 class="panel-title">
-          Notifiche
-          @if (unreadCount > 0) {
-            <p-badge [value]="unreadCount.toString()" severity="danger" class="ml-2" />
+      <div class="panel-header panel-header--clickable" (click)="showNotifications.set(!showNotifications())">
+        <div class="panel-header-left">
+          <i class="pi panel-chevron" [class.pi-chevron-down]="!showNotifications()" [class.pi-chevron-up]="showNotifications()"></i>
+          <h2 class="panel-title">
+            <i class="pi pi-bell panel-title-icon"></i>
+            Notifiche
+          </h2>
+          @if (notifications().length > 0) {
+            <span class="panel-badge" [class.panel-badge--alert]="unreadCount > 0">
+              {{ unreadCount > 0 ? unreadCount : notifications().length }}
+            </span>
           }
-        </h2>
-        @if (unreadCount > 0) {
+        </div>
+        @if (unreadCount > 0 && showNotifications()) {
           <p-button
             label="Segna tutte come lette"
             severity="secondary"
             size="small"
             [text]="true"
             styleClass="mark-read-btn"
-            (onClick)="markAllRead()"
+            (onClick)="markAllRead(); $event.stopPropagation()"
           />
         }
       </div>
-      <div class="notifications-list">
-        @for (n of notifications(); track n.id) {
-          <div
-            class="notification-row"
-            [class.notification-row--unread]="!n.read"
-            [class.notification-row--read]="n.read"
-          >
-            <i class="notification-icon pi" [class.pi-check-circle]="n.read" [class.pi-bell]="!n.read"></i>
-            <span class="notification-message">{{ n.message }}</span>
-            <span class="notification-time">{{ n.created_at | date: 'dd/MM HH:mm' }}</span>
+
+      @if (showNotifications()) {
+        <div class="panel-body">
+          <div class="notifications-list">
+            @for (n of notifications(); track n.id) {
+              <div
+                class="notification-row"
+                [class.notification-row--unread]="!n.read"
+                [class.notification-row--read]="n.read"
+              >
+                <i class="notification-icon pi" [class.pi-check-circle]="n.read" [class.pi-bell]="!n.read"></i>
+                <span class="notification-message">{{ n.message }}</span>
+                <span class="notification-time">{{ n.created_at | date: 'dd/MM HH:mm' }}</span>
+              </div>
+            }
           </div>
-        }
-      </div>
+        </div>
+      }
     </div>
   }
 
   <!-- ═══ LISTA RSVP CON FILTRI ═══ -->
   <div class="panel-card">
-    <h2 class="panel-title list-title">Chi ha confermato</h2>
-
-    @if (loading()) {
-      <div class="list-placeholder">Caricamento...</div>
-    } @else if (activeRsvps().length === 0) {
-      <div class="list-placeholder">
-        <div class="empty-icon">Nessuna conferma</div>
-        <p>Ancora nessuna conferma. Condividi il link agli invitati!</p>
+    <div class="panel-header panel-header--clickable" (click)="showRsvpList.set(!showRsvpList())">
+      <div class="panel-header-left">
+        <i class="pi panel-chevron" [class.pi-chevron-down]="!showRsvpList()" [class.pi-chevron-up]="showRsvpList()"></i>
+        <h2 class="panel-title">
+          <i class="pi pi-users panel-title-icon"></i>
+          Chi ha confermato
+        </h2>
+        @if (activeRsvps().length > 0) {
+          <span class="panel-badge">{{ activeRsvps().length }}</span>
+        }
       </div>
-    } @else {
+    </div>
 
-      <!-- Barra filtri -->
-      <div class="filters-bar">
-        <div class="search-box">
-          <i class="pi pi-search"></i>
-          <input
-            type="text"
-            placeholder="Cerca per nome..."
-            [ngModel]="searchQuery()"
-            (ngModelChange)="searchQuery.set($event)"
-          />
-        </div>
-
-        <div class="filter-actions">
-          <button
-            class="filter-chip"
-            [class.filter-chip--active]="onlyWithMessage()"
-            (click)="onlyWithMessage.set(!onlyWithMessage())"
-          >
-            <i class="pi pi-comment"></i>
-            Solo con messaggio
-          </button>
-
-          <div class="sort-group">
-            <span class="sort-label">Ordina:</span>
-            <button
-              class="sort-chip"
-              [class.sort-chip--active]="sortBy() === 'date'"
-              (click)="sortBy.set('date')"
-            >
-              <i class="pi pi-calendar"></i> Data
-            </button>
-            <button
-              class="sort-chip"
-              [class.sort-chip--active]="sortBy() === 'nome'"
-              (click)="sortBy.set('nome')"
-            >
-              <i class="pi pi-sort-alpha-down"></i> Nome
-            </button>
-            <button
-              class="sort-chip"
-              [class.sort-chip--active]="sortBy() === 'partecipanti'"
-              (click)="sortBy.set('partecipanti')"
-            >
-              <i class="pi pi-users"></i> Persone
-            </button>
+    @if (showRsvpList()) {
+      <div class="panel-body">
+        @if (loading()) {
+          <div class="list-placeholder">Caricamento...</div>
+        } @else if (activeRsvps().length === 0) {
+          <div class="list-placeholder">
+            <div class="empty-icon">Nessuna conferma</div>
+            <p>Ancora nessuna conferma. Condividi il link agli invitati!</p>
           </div>
-        </div>
-      </div>
+        } @else {
 
-      <!-- Contatore risultati -->
-      @if (filteredRsvps().length !== activeRsvps().length) {
-        <p class="filter-count">
-          {{ filteredRsvps().length }} di {{ activeRsvps().length }} risultati
-        </p>
-      }
+          <!-- Barra filtri -->
+          <div class="filters-bar">
+            <div class="search-box">
+              <i class="pi pi-search"></i>
+              <input
+                type="text"
+                placeholder="Cerca per nome..."
+                [ngModel]="searchQuery()"
+                (ngModelChange)="searchQuery.set($event)"
+              />
+            </div>
 
-      <!-- Lista -->
-      @if (filteredRsvps().length === 0) {
-        <div class="list-placeholder">
-          <i class="pi pi-search" style="font-size: 1.3rem; margin-bottom: 0.4rem"></i>
-          <p>Nessun risultato per questa ricerca</p>
-        </div>
-      } @else {
-        <div class="rsvp-list">
-          @for (rsvp of filteredRsvps(); track rsvp.id) {
-            <div
-              class="rsvp-row"
-              [class.rsvp-row--confirm]="confirmDeleteId() === rsvp.id"
-            >
-              <div class="avatar">
-                {{ rsvp.nome.charAt(0).toUpperCase() }}
-              </div>
-              <div class="rsvp-content">
-                <div class="rsvp-head">
-                  <span class="rsvp-name">{{ rsvp.nome }}</span>
-                  <p-tag
-                    [value]="rsvp.num_partecipanti + ' persona/e'"
-                    severity="secondary"
-                  />
-                </div>
-                @if (rsvp.messaggio) {
-                  <p class="rsvp-message">"{{ rsvp.messaggio }}"</p>
-                }
-              </div>
+            <div class="filter-actions">
+              <button
+                class="filter-chip"
+                [class.filter-chip--active]="onlyWithMessage()"
+                (click)="onlyWithMessage.set(!onlyWithMessage())"
+              >
+                <i class="pi pi-comment"></i>
+                Solo con messaggio
+              </button>
 
-              <div class="rsvp-actions">
-                <span class="rsvp-time">{{ rsvp.created_at | date: 'dd/MM HH:mm' }}</span>
-
-                @if (confirmDeleteId() === rsvp.id) {
-                  <!-- Stato conferma -->
-                  <div class="delete-confirm">
-                    <span class="delete-confirm-label">Eliminare?</span>
-                    <button
-                      class="delete-confirm-btn delete-confirm-btn--yes"
-                      (click)="onDelete(rsvp.id)"
-                      [disabled]="deleting()"
-                    >
-                      <i class="pi pi-check"></i>
-                    </button>
-                    <button
-                      class="delete-confirm-btn delete-confirm-btn--no"
-                      (click)="cancelDelete()"
-                    >
-                      <i class="pi pi-times"></i>
-                    </button>
-                  </div>
-                } @else {
-                  <!-- Bottone cestino -->
-                  <button
-                    class="delete-btn"
-                    type="button"
-                    title="Elimina RSVP"
-                    (click)="onDelete(rsvp.id)"
-                  >
-                    <i class="pi pi-trash"></i>
-                  </button>
-                }
+              <div class="sort-group">
+                <span class="sort-label">Ordina:</span>
+                <button
+                  class="sort-chip"
+                  [class.sort-chip--active]="sortBy() === 'date'"
+                  (click)="sortBy.set('date')"
+                >
+                  <i class="pi pi-calendar"></i> Data
+                </button>
+                <button
+                  class="sort-chip"
+                  [class.sort-chip--active]="sortBy() === 'nome'"
+                  (click)="sortBy.set('nome')"
+                >
+                  <i class="pi pi-sort-alpha-down"></i> Nome
+                </button>
+                <button
+                  class="sort-chip"
+                  [class.sort-chip--active]="sortBy() === 'partecipanti'"
+                  (click)="sortBy.set('partecipanti')"
+                >
+                  <i class="pi pi-users"></i> Persone
+                </button>
               </div>
             </div>
+          </div>
+
+          <!-- Contatore risultati -->
+          @if (filteredRsvps().length !== activeRsvps().length) {
+            <p class="filter-count">
+              {{ filteredRsvps().length }} di {{ activeRsvps().length }} risultati
+            </p>
           }
-        </div>
-      }
+
+          <!-- Lista -->
+          @if (filteredRsvps().length === 0) {
+            <div class="list-placeholder">
+              <i class="pi pi-search" style="font-size: 1.3rem; margin-bottom: 0.4rem"></i>
+              <p>Nessun risultato per questa ricerca</p>
+            </div>
+          } @else {
+            <div class="rsvp-list">
+              @for (rsvp of filteredRsvps(); track rsvp.id) {
+                <div
+                  class="rsvp-row"
+                  [class.rsvp-row--confirm]="confirmDeleteId() === rsvp.id"
+                >
+                  <div class="avatar">
+                    {{ rsvp.nome.charAt(0).toUpperCase() }}
+                  </div>
+                  <div class="rsvp-content">
+                    <div class="rsvp-head">
+                      <span class="rsvp-name">{{ rsvp.nome }}</span>
+                      <p-tag
+                        [value]="rsvp.num_partecipanti + ' persona/e'"
+                        severity="secondary"
+                      />
+                    </div>
+                    @if (rsvp.messaggio) {
+                      <p class="rsvp-message">"{{ rsvp.messaggio }}"</p>
+                    }
+                  </div>
+
+                  <div class="rsvp-actions">
+                    <span class="rsvp-time">{{ rsvp.created_at | date: 'dd/MM HH:mm' }}</span>
+
+                    @if (confirmDeleteId() === rsvp.id) {
+                      <div class="delete-confirm">
+                        <span class="delete-confirm-label">Eliminare?</span>
+                        <button
+                          class="delete-confirm-btn delete-confirm-btn--yes"
+                          (click)="onDelete(rsvp.id)"
+                          [disabled]="deleting()"
+                        >
+                          <i class="pi pi-check"></i>
+                        </button>
+                        <button
+                          class="delete-confirm-btn delete-confirm-btn--no"
+                          (click)="cancelDelete()"
+                        >
+                          <i class="pi pi-times"></i>
+                        </button>
+                      </div>
+                    } @else {
+                      <button
+                        class="delete-btn"
+                        type="button"
+                        title="Elimina RSVP"
+                        (click)="onDelete(rsvp.id)"
+                      >
+                        <i class="pi pi-trash"></i>
+                      </button>
+                    }
+                  </div>
+                </div>
+              }
+            </div>
+          }
+        }
+      </div>
     }
   </div>
 
-  <!-- ═══ CESTINO (Soft deleted) ═══ -->
+  <!-- ═══ CESTINO ═══ -->
   @if (deletedRsvps().length > 0) {
     <div class="panel-card trash-panel">
-      <div class="panel-header">
-        <h2 class="panel-title">
-          <i class="pi pi-trash trash-icon"></i>
-          Cestino
-        </h2>
-        <button
-          class="trash-toggle"
-          (click)="showTrash.set(!showTrash())"
-        >
-          <i class="pi" [class.pi-chevron-down]="!showTrash()" [class.pi-chevron-up]="showTrash()"></i>
-          {{ deletedRsvps().length }} eliminati
-        </button>
+      <div class="panel-header panel-header--clickable" (click)="showTrash.set(!showTrash())">
+        <div class="panel-header-left">
+          <i class="pi panel-chevron" [class.pi-chevron-down]="!showTrash()" [class.pi-chevron-up]="showTrash()"></i>
+          <h2 class="panel-title">
+            <i class="pi pi-trash panel-title-icon trash-icon"></i>
+            Cestino
+          </h2>
+          <span class="panel-badge panel-badge--muted">{{ deletedRsvps().length }}</span>
+        </div>
       </div>
 
       @if (showTrash()) {
-        <div class="rsvp-list trash-list">
-          @for (rsvp of deletedRsvps(); track rsvp.id) {
-            <div class="rsvp-row trash-row">
-              <div class="avatar avatar--deleted">
-                {{ rsvp.nome.charAt(0).toUpperCase() }}
-              </div>
-              <div class="rsvp-content">
-                <div class="rsvp-head">
-                  <span class="rsvp-name rsvp-name--deleted">{{ rsvp.nome }}</span>
-                  <p-tag
-                    [value]="rsvp.num_partecipanti + ' persona/e'"
-                    severity="secondary"
-                  />
+        <div class="panel-body">
+          <div class="rsvp-list trash-list">
+            @for (rsvp of deletedRsvps(); track rsvp.id) {
+              <div class="rsvp-row trash-row">
+                <div class="avatar avatar--deleted">
+                  {{ rsvp.nome.charAt(0).toUpperCase() }}
                 </div>
-                @if (rsvp.messaggio) {
-                  <p class="rsvp-message">"{{ rsvp.messaggio }}"</p>
-                }
+                <div class="rsvp-content">
+                  <div class="rsvp-head">
+                    <span class="rsvp-name rsvp-name--deleted">{{ rsvp.nome }}</span>
+                    <p-tag
+                      [value]="rsvp.num_partecipanti + ' persona/e'"
+                      severity="secondary"
+                    />
+                  </div>
+                  @if (rsvp.messaggio) {
+                    <p class="rsvp-message">"{{ rsvp.messaggio }}"</p>
+                  }
+                </div>
+                <button
+                  class="restore-btn"
+                  type="button"
+                  title="Ripristina"
+                  (click)="onRestore(rsvp.id)"
+                >
+                  <i class="pi pi-replay"></i>
+                  <span>Ripristina</span>
+                </button>
               </div>
-              <button
-                class="restore-btn"
-                type="button"
-                title="Ripristina"
-                (click)="onRestore(rsvp.id)"
-              >
-                <i class="pi pi-replay"></i>
-                <span>Ripristina</span>
-              </button>
-            </div>
-          }
+            }
+          </div>
         </div>
       }
     </div>
   }
 
-  <!-- ═══ BACHECA MESSAGGI / GUESTBOOK ═══ -->
+  <!-- ═══ BACHECA MESSAGGI ═══ -->
   @if (guestMessages().length > 0) {
     <div class="panel-card guestbook-panel">
-      <div class="panel-header">
-        <h2 class="panel-title">
-          <i class="pi pi-heart-fill guestbook-icon"></i>
-          Bacheca messaggi
-        </h2>
-        <span class="guestbook-count">{{ guestMessages().length }} messaggi</span>
+      <div class="panel-header panel-header--clickable" (click)="showGuestbook.set(!showGuestbook())">
+        <div class="panel-header-left">
+          <i class="pi panel-chevron" [class.pi-chevron-down]="!showGuestbook()" [class.pi-chevron-up]="showGuestbook()"></i>
+          <h2 class="panel-title">
+            <i class="pi pi-heart-fill panel-title-icon guestbook-icon"></i>
+            Bacheca messaggi
+          </h2>
+          <span class="panel-badge">{{ guestMessages().length }}</span>
+        </div>
       </div>
 
-      <div class="guestbook-grid">
-        @for (msg of guestMessages(); track msg.id; let i = $index) {
-          <div class="postit" [style.--rotation]="(i % 5 - 2) + 'deg'">
-            <p class="postit-text">"{{ msg.messaggio }}"</p>
-            <div class="postit-footer">
-              <span class="postit-author">— {{ msg.nome }}</span>
-              <span class="postit-date">{{ msg.created_at | date: 'dd MMM' }}</span>
-            </div>
+      @if (showGuestbook()) {
+        <div class="panel-body">
+          <div class="guestbook-grid">
+            @for (msg of guestMessages(); track msg.id; let i = $index) {
+              <div class="postit" [style.--rotation]="(i % 5 - 2) + 'deg'">
+                <p class="postit-text">"{{ msg.messaggio }}"</p>
+                <div class="postit-footer">
+                  <span class="postit-author">— {{ msg.nome }}</span>
+                  <span class="postit-date">{{ msg.created_at | date: 'dd MMM' }}</span>
+                </div>
+              </div>
+            }
           </div>
-        }
-      </div>
+        </div>
+      }
     </div>
   }
 

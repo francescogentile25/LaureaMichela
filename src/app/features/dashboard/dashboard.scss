@@ -123,7 +123,31 @@
   align-items: center;
   justify-content: space-between;
   gap: 0.75rem;
-  margin-bottom: 0.9rem;
+
+  &--clickable {
+    cursor: pointer;
+    user-select: none;
+    border-radius: 0.6rem;
+    padding: 0.35rem;
+    margin: -0.35rem -0.35rem 0;
+    transition: background 0.15s ease;
+
+    &:hover {
+      background: rgba(129, 158, 219, 0.07);
+    }
+  }
+}
+
+.panel-header-left {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.panel-chevron {
+  font-size: 0.85rem;
+  color: var(--ink-muted);
+  transition: transform 0.2s ease;
 }
 
 .panel-title {
@@ -131,10 +155,60 @@
   color: var(--ink);
   font-size: 1.1rem;
   font-weight: 700;
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
 }
 
-.list-title {
-  margin-bottom: 0.95rem;
+.panel-title-icon {
+  font-size: 0.95rem;
+  color: var(--primary-mid);
+}
+
+.panel-badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 1.45rem;
+  height: 1.45rem;
+  padding: 0 0.4rem;
+  border-radius: 999px;
+  background: var(--primary-soft);
+  color: var(--primary-dark);
+  font-size: 0.75rem;
+  font-weight: 800;
+
+  &--alert {
+    background: #e74c4c;
+    color: #fff;
+    animation: badgePulse 2s ease-in-out infinite;
+  }
+
+  &--muted {
+    background: #f0e8e8;
+    color: #a07070;
+  }
+}
+
+@keyframes badgePulse {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.1); }
+}
+
+.panel-body {
+  margin-top: 0.9rem;
+  animation: panelOpen 0.25s ease;
+}
+
+@keyframes panelOpen {
+  from {
+    opacity: 0;
+    transform: translateY(-6px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
 .notifications-list,
@@ -493,15 +567,6 @@
   font-size: 0.95rem;
 }
 
-.guestbook-count {
-  font-size: 0.82rem;
-  font-weight: 600;
-  color: var(--ink-muted);
-  background: #edf2ff;
-  padding: 0.2rem 0.7rem;
-  border-radius: 999px;
-}
-
 .guestbook-grid {
   display: grid;
   grid-template-columns: repeat(1, 1fr);
@@ -611,26 +676,6 @@
   color: #b0888a;
   margin-right: 0.3rem;
   font-size: 0.95rem;
-}
-
-.trash-toggle {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.35rem;
-  padding: 0.25rem 0.7rem;
-  border: 1px solid #e0d0d0;
-  border-radius: 999px;
-  background: #f5eeee;
-  color: #8a6a6c;
-  font-size: 0.82rem;
-  font-weight: 600;
-  cursor: pointer;
-  transition: all 0.2s ease;
-
-  &:hover {
-    background: #efe5e5;
-    border-color: #d4bcbc;
-  }
 }
 
 .trash-list {

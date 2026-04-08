@@ -28,10 +28,15 @@ export class Dashboard implements OnInit, OnDestroy {
   onlyWithMessage = signal(false);
   sortBy = signal<SortOption>('date');
 
+  // Pannelli collassabili (false = chiuso, true = aperto)
+  showNotifications = signal(false);
+  showRsvpList = signal(true);
+  showTrash = signal(false);
+  showGuestbook = signal(true);
+
   // Soft delete
   confirmDeleteId = signal<string | null>(null);
   deleting = signal(false);
-  showTrash = signal(false);
 
   private unsubRsvp?: () => void;
   private unsubNotifications?: () => void;
