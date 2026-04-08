@@ -1,5 +1,5 @@
 import { inject, Injectable } from '@angular/core';
-import { forkJoin, from, map, Observable } from 'rxjs';
+import { from, map, Observable } from 'rxjs';
 import { SupabaseService } from './supabase.service';
 
 export type Rsvp = {
@@ -7,6 +7,7 @@ export type Rsvp = {
   nome: string;
   num_partecipanti: number;
   messaggio: string | null;
+  deleted: boolean;
   created_at: string;
 };
 
@@ -56,26 +57,25 @@ export class RsvpService {
     );
   }
 
-  /** Elimina l'RSVP e le notifiche il cui messaggio contiene il nome */
-  deleteRsvp(id: string, nome: string): Observable<void> {
-    const deleteRsvp$ = from(
-      this.supabase.client.from('rsvp').delete().eq('id', id)
+  /** Soft delete: segna l'RSVP come eliminato */
+  softDeleteRsvp(id: string): Observable<void> {
+    return from(
+      this.supabase.client.from('rsvp').update({ deleted: true }).eq('id', id)
     ).pipe(
       map(({ error }) => {
         if (error) throw new Error(error.message);
       })
     );
+  }
 
-    const deleteNotifications$ = from(
-      this.supabase.client.from('notifications').delete().ilike('message', `%${nome}%`)
+  /** Ripristina un RSVP eliminato */
+  restoreRsvp(id: string): Observable<void> {
+    return from(
+      this.supabase.client.from('rsvp').update({ deleted: false }).eq('id', id)
     ).pipe(
       map(({ error }) => {
         if (error) throw new Error(error.message);
       })
-    );
-
-    return forkJoin([deleteRsvp$, deleteNotifications$]).pipe(
-      map(() => void 0)
     );
   }
 

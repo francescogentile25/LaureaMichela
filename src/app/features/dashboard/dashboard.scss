@@ -190,10 +190,6 @@
   &:hover {
     border-color: #b9cdf8;
     transform: translateY(-1px);
-
-    .delete-btn {
-      opacity: 1;
-    }
   }
 
   &--confirm {
@@ -263,7 +259,6 @@
   color: #b0b8cc;
   font-size: 0.85rem;
   cursor: pointer;
-  opacity: 0;
   transition: all 0.2s ease;
 
   &:hover {
@@ -604,6 +599,87 @@
 }
 
 /* ════════════════════════════════
+   CESTINO / TRASH
+   ════════════════════════════════ */
+
+.trash-panel {
+  border-color: rgba(200, 180, 180, 0.35);
+  background: #fefcfccc;
+}
+
+.trash-icon {
+  color: #b0888a;
+  margin-right: 0.3rem;
+  font-size: 0.95rem;
+}
+
+.trash-toggle {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  padding: 0.25rem 0.7rem;
+  border: 1px solid #e0d0d0;
+  border-radius: 999px;
+  background: #f5eeee;
+  color: #8a6a6c;
+  font-size: 0.82rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+
+  &:hover {
+    background: #efe5e5;
+    border-color: #d4bcbc;
+  }
+}
+
+.trash-list {
+  animation: fadeSlideIn 0.2s ease;
+}
+
+.trash-row {
+  border-color: #ecdede;
+  background: #fdf7f7;
+
+  &:hover {
+    border-color: #e0cccc;
+  }
+}
+
+.avatar--deleted {
+  background: #f0dede;
+  color: #a07070;
+}
+
+.rsvp-name--deleted {
+  color: var(--ink-muted);
+  text-decoration: line-through;
+}
+
+.restore-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  padding: 0.35rem 0.75rem;
+  border: 1px solid rgba(80, 170, 120, 0.35);
+  border-radius: 999px;
+  background: #eef8f2;
+  color: #3a8a5c;
+  font-size: 0.8rem;
+  font-weight: 600;
+  cursor: pointer;
+  white-space: nowrap;
+  flex-shrink: 0;
+  transition: all 0.2s ease;
+
+  &:hover {
+    background: #d9f0e2;
+    border-color: rgba(60, 150, 100, 0.5);
+    transform: translateY(-1px);
+  }
+}
+
+/* ════════════════════════════════
    RESPONSIVE
    ════════════════════════════════ */
 
@@ -658,8 +734,7 @@
     width: 100%;
   }
 
-  // Su mobile il bottone cestino è sempre visibile (no hover)
-  .delete-btn {
-    opacity: 0.6;
+  .restore-btn span {
+    display: none;
   }
 }

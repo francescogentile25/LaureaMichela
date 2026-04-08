@@ -28,29 +28,33 @@ export class Dashboard implements OnInit, OnDestroy {
   onlyWithMessage = signal(false);
   sortBy = signal<SortOption>('date');
 
-  // Eliminazione RSVP
+  // Soft delete
   confirmDeleteId = signal<string | null>(null);
   deleting = signal(false);
+  showTrash = signal(false);
 
   private unsubRsvp?: () => void;
   private unsubNotifications?: () => void;
 
-  /** RSVP filtrati e ordinati */
+  /** RSVP attivi (non eliminati) */
+  activeRsvps = computed(() => this.rsvps().filter(r => !r.deleted));
+
+  /** RSVP nel cestino */
+  deletedRsvps = computed(() => this.rsvps().filter(r => r.deleted));
+
+  /** RSVP attivi filtrati e ordinati */
   filteredRsvps = computed(() => {
-    let list = this.rsvps();
+    let list = this.activeRsvps();
     const query = this.searchQuery().trim().toLowerCase();
 
-    // Ricerca per nome
     if (query) {
       list = list.filter(r => r.nome.toLowerCase().includes(query));
     }
 
-    // Solo con messaggio
     if (this.onlyWithMessage()) {
       list = list.filter(r => !!r.messaggio);
     }
 
-    // Ordinamento
     switch (this.sortBy()) {
       case 'nome':
         list = [...list].sort((a, b) => a.nome.localeCompare(b.nome));
@@ -60,20 +64,19 @@ export class Dashboard implements OnInit, OnDestroy {
         break;
       case 'date':
       default:
-        // già ordinati per data dal backend
         break;
     }
 
     return list;
   });
 
-  /** Messaggi per la bacheca (solo RSVP con messaggio) */
+  /** Messaggi per la bacheca (solo RSVP attivi con messaggio) */
   guestMessages = computed(() =>
-    this.rsvps().filter(r => !!r.messaggio)
+    this.activeRsvps().filter(r => !!r.messaggio)
   );
 
   get totalPersone(): number {
-    return this.rsvps().reduce((sum, r) => sum + r.num_partecipanti, 0);
+    return this.activeRsvps().reduce((sum, r) => sum + r.num_partecipanti, 0);
   }
 
   get unreadCount(): number {
@@ -118,21 +121,14 @@ export class Dashboard implements OnInit, OnDestroy {
     });
   }
 
-  /** Primo click: mostra conferma. Secondo click: elimina RSVP + notifiche collegate. */
+  /** Primo click: mostra conferma. Secondo click: soft delete. */
   onDelete(id: string) {
     if (this.confirmDeleteId() === id) {
-      const rsvp = this.rsvps().find(r => r.id === id);
-      if (!rsvp) return;
-
       this.deleting.set(true);
-      this.rsvpService.deleteRsvp(id, rsvp.nome).subscribe({
+      this.rsvpService.softDeleteRsvp(id).subscribe({
         next: () => {
-          // Rimuovi RSVP dalla lista locale
-          this.rsvps.update(list => list.filter(r => r.id !== id));
-          // Rimuovi notifiche che contengono il nome
-          const nomeLower = rsvp.nome.toLowerCase();
-          this.notifications.update(list =>
-            list.filter(n => !n.message.toLowerCase().includes(nomeLower))
+          this.rsvps.update(list =>
+            list.map(r => r.id === id ? { ...r, deleted: true } : r)
           );
           this.confirmDeleteId.set(null);
           this.deleting.set(false);
@@ -149,6 +145,17 @@ export class Dashboard implements OnInit, OnDestroy {
 
   cancelDelete() {
     this.confirmDeleteId.set(null);
+  }
+
+  /** Ripristina un RSVP dal cestino */
+  onRestore(id: string) {
+    this.rsvpService.restoreRsvp(id).subscribe({
+      next: () => {
+        this.rsvps.update(list =>
+          list.map(r => r.id === id ? { ...r, deleted: false } : r)
+        );
+      },
+    });
   }
 
   shareOnWhatsApp() {

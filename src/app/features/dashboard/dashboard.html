@@ -19,7 +19,7 @@
 
   <div class="stats-grid">
     <div class="stat-card">
-      <div class="stat-value">{{ rsvps().length }}</div>
+      <div class="stat-value">{{ activeRsvps().length }}</div>
       <div class="stat-label">Conferme ricevute</div>
     </div>
     <div class="stat-card">
@@ -74,7 +74,7 @@
 
     @if (loading()) {
       <div class="list-placeholder">Caricamento...</div>
-    } @else if (rsvps().length === 0) {
+    } @else if (activeRsvps().length === 0) {
       <div class="list-placeholder">
         <div class="empty-icon">Nessuna conferma</div>
         <p>Ancora nessuna conferma. Condividi il link agli invitati!</p>
@@ -131,9 +131,9 @@
       </div>
 
       <!-- Contatore risultati -->
-      @if (filteredRsvps().length !== rsvps().length) {
+      @if (filteredRsvps().length !== activeRsvps().length) {
         <p class="filter-count">
-          {{ filteredRsvps().length }} di {{ rsvps().length }} risultati
+          {{ filteredRsvps().length }} di {{ activeRsvps().length }} risultati
         </p>
       }
 
@@ -205,6 +205,58 @@
       }
     }
   </div>
+
+  <!-- ═══ CESTINO (Soft deleted) ═══ -->
+  @if (deletedRsvps().length > 0) {
+    <div class="panel-card trash-panel">
+      <div class="panel-header">
+        <h2 class="panel-title">
+          <i class="pi pi-trash trash-icon"></i>
+          Cestino
+        </h2>
+        <button
+          class="trash-toggle"
+          (click)="showTrash.set(!showTrash())"
+        >
+          <i class="pi" [class.pi-chevron-down]="!showTrash()" [class.pi-chevron-up]="showTrash()"></i>
+          {{ deletedRsvps().length }} eliminati
+        </button>
+      </div>
+
+      @if (showTrash()) {
+        <div class="rsvp-list trash-list">
+          @for (rsvp of deletedRsvps(); track rsvp.id) {
+            <div class="rsvp-row trash-row">
+              <div class="avatar avatar--deleted">
+                {{ rsvp.nome.charAt(0).toUpperCase() }}
+              </div>
+              <div class="rsvp-content">
+                <div class="rsvp-head">
+                  <span class="rsvp-name rsvp-name--deleted">{{ rsvp.nome }}</span>
+                  <p-tag
+                    [value]="rsvp.num_partecipanti + ' persona/e'"
+                    severity="secondary"
+                  />
+                </div>
+                @if (rsvp.messaggio) {
+                  <p class="rsvp-message">"{{ rsvp.messaggio }}"</p>
+                }
+              </div>
+              <button
+                class="restore-btn"
+                type="button"
+                title="Ripristina"
+                (click)="onRestore(rsvp.id)"
+              >
+                <i class="pi pi-replay"></i>
+                <span>Ripristina</span>
+              </button>
+            </div>
+          }
+        </div>
+      }
+    </div>
+  }
 
   <!-- ═══ BACHECA MESSAGGI / GUESTBOOK ═══ -->
   @if (guestMessages().length > 0) {
