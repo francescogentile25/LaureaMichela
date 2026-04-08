@@ -1,5 +1,5 @@
 import { inject, Injectable } from '@angular/core';
-import { from, map, Observable } from 'rxjs';
+import { forkJoin, from, map, Observable } from 'rxjs';
 import { SupabaseService } from './supabase.service';
 
 export type Rsvp = {
@@ -56,13 +56,26 @@ export class RsvpService {
     );
   }
 
-  deleteRsvp(id: string): Observable<void> {
-    return from(
+  /** Elimina l'RSVP e le notifiche il cui messaggio contiene il nome */
+  deleteRsvp(id: string, nome: string): Observable<void> {
+    const deleteRsvp$ = from(
       this.supabase.client.from('rsvp').delete().eq('id', id)
     ).pipe(
       map(({ error }) => {
         if (error) throw new Error(error.message);
       })
+    );
+
+    const deleteNotifications$ = from(
+      this.supabase.client.from('notifications').delete().ilike('message', `%${nome}%`)
+    ).pipe(
+      map(({ error }) => {
+        if (error) throw new Error(error.message);
+      })
+    );
+
+    return forkJoin([deleteRsvp$, deleteNotifications$]).pipe(
+      map(() => void 0)
     );
   }
 

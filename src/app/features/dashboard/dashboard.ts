@@ -118,14 +118,22 @@ export class Dashboard implements OnInit, OnDestroy {
     });
   }
 
-  /** Primo click: mostra conferma. Secondo click: elimina. */
+  /** Primo click: mostra conferma. Secondo click: elimina RSVP + notifiche collegate. */
   onDelete(id: string) {
     if (this.confirmDeleteId() === id) {
+      const rsvp = this.rsvps().find(r => r.id === id);
+      if (!rsvp) return;
+
       this.deleting.set(true);
-      this.rsvpService.deleteRsvp(id).subscribe({
+      this.rsvpService.deleteRsvp(id, rsvp.nome).subscribe({
         next: () => {
-          // Rimuovi subito dalla lista locale per feedback istantaneo
+          // Rimuovi RSVP dalla lista locale
           this.rsvps.update(list => list.filter(r => r.id !== id));
+          // Rimuovi notifiche che contengono il nome
+          const nomeLower = rsvp.nome.toLowerCase();
+          this.notifications.update(list =>
+            list.filter(n => !n.message.toLowerCase().includes(nomeLower))
+          );
           this.confirmDeleteId.set(null);
           this.deleting.set(false);
         },
