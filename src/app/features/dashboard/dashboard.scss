@@ -83,8 +83,8 @@
 
 .stats-grid {
   display: grid;
-  grid-template-columns: repeat(1, minmax(0, 1fr));
-  gap: 1rem;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0.75rem;
   margin-bottom: 2rem;
 }
 
@@ -111,6 +111,32 @@
 .stat-label {
   color: var(--ink-muted);
   margin-top: 0.25rem;
+}
+
+/* ════════════════════════════════
+   BANNER INVITI IN SOSPESO
+   ════════════════════════════════ */
+
+.pending-banner {
+  display: flex;
+  align-items: center;
+  gap: 0.65rem;
+  padding: 0.85rem 1.1rem;
+  margin-bottom: 1.4rem;
+  border-radius: 0.9rem;
+  background: linear-gradient(135deg, #fff4e6 0%, #ffe8cc 100%);
+  border: 1px solid rgba(220, 170, 90, 0.35);
+  color: #7a5a20;
+  font-size: 0.9rem;
+
+  i {
+    font-size: 1.15rem;
+    color: #d4940a;
+  }
+
+  strong {
+    color: #9a6b10;
+  }
 }
 
 .panel-card {
@@ -276,13 +302,12 @@
   width: 2.5rem;
   height: 2.5rem;
   border-radius: 999px;
-  background: #dbe6ff;
-  color: #4064b6;
   display: flex;
   align-items: center;
   justify-content: center;
   font-weight: 700;
   flex-shrink: 0;
+  font-size: 1.05rem;
 }
 
 .rsvp-content {
@@ -734,7 +759,7 @@
   }
 
   .stats-grid {
-    grid-template-columns: repeat(3, minmax(0, 1fr));
+    grid-template-columns: repeat(4, minmax(0, 1fr));
   }
 
   .guestbook-grid {

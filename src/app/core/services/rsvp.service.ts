@@ -1,5 +1,6 @@
 import { inject, Injectable } from '@angular/core';
 import { from, map, Observable } from 'rxjs';
+
 import { SupabaseService } from './supabase.service';
 
 export type Rsvp = {
@@ -15,6 +16,12 @@ export type Notification = {
   id: string;
   message: string;
   read: boolean;
+  created_at: string;
+};
+
+export type InviteView = {
+  id: string;
+  visitor_id: string;
   created_at: string;
 };
 
@@ -96,6 +103,36 @@ export class RsvpService {
       .subscribe();
 
     return () => this.supabase.client.removeChannel(channel);
+  }
+
+  /** Registra una visita unica alla pagina invito (1 per browser via localStorage) */
+  trackInviteView(): Observable<void> {
+    const storageKey = 'invite_visitor_id';
+    let visitorId = localStorage.getItem(storageKey);
+    if (visitorId) return new Observable(sub => sub.complete()); // già tracciato
+
+    visitorId = crypto.randomUUID();
+    localStorage.setItem(storageKey, visitorId);
+
+    return from(
+      this.supabase.client.from('invite_views').insert({ visitor_id: visitorId })
+    ).pipe(
+      map(({ error }) => {
+        if (error) throw new Error(error.message);
+      })
+    );
+  }
+
+  /** Conta le visite uniche all'invito */
+  getInviteViewsCount(): Observable<number> {
+    return from(
+      this.supabase.client.from('invite_views').select('*', { count: 'exact', head: true })
+    ).pipe(
+      map(({ count, error }) => {
+        if (error) throw new Error(error.message);
+        return count ?? 0;
+      })
+    );
   }
 
   listenToNotifications(callback: () => void): () => void {

@@ -10,6 +10,7 @@ import {
 } from '@angular/core';
 import { Router } from '@angular/router';
 import { gsap } from 'gsap';
+import { RsvpService } from '../../core/services/rsvp.service';
 
 @Component({
   selector: 'app-envelope',
@@ -18,8 +19,9 @@ import { gsap } from 'gsap';
   styleUrl: './envelope.scss',
 })
 export class EnvelopePage implements AfterViewInit, OnDestroy {
-  private router  = inject(Router);
-  private zone    = inject(NgZone);
+  private router      = inject(Router);
+  private zone        = inject(NgZone);
+  private rsvpService = inject(RsvpService);
 
   @ViewChild('envelopeEl') envelopeRef!: ElementRef<HTMLElement>;
   @ViewChild('flapOuter')  flapRef!:     ElementRef<HTMLElement>;
@@ -46,6 +48,9 @@ export class EnvelopePage implements AfterViewInit, OnDestroy {
 
     // Set initial flap state: rotateX(0) = closed (diamond covers top)
     gsap.set(this.flapRef.nativeElement, { rotateX: 0, perspective: 1200 });
+
+    // Traccia la visita all'invito
+    this.rsvpService.trackInviteView().subscribe();
 
     // Entrance animation
     gsap.from('.envelope', { opacity: 0, y: 60, scale: 0.88, duration: 1, ease: 'power3.out', delay: 0.3 });

@@ -1,3 +1,5 @@
+<p-toast position="top-right" />
+
 <div class="dashboard-page">
 
   <div class="dashboard-header">
@@ -17,6 +19,7 @@
     </div>
   </div>
 
+  <!-- ═══ STATISTICHE ═══ -->
   <div class="stats-grid">
     <div class="stat-card">
       <div class="stat-value">{{ activeRsvps().length }}</div>
@@ -27,10 +30,25 @@
       <div class="stat-label">Persone totali</div>
     </div>
     <div class="stat-card">
+      <div class="stat-value">{{ inviteViews() }}</div>
+      <div class="stat-label">Hanno aperto l'invito</div>
+    </div>
+    <div class="stat-card">
       <div class="stat-value">{{ unreadCount }}</div>
       <div class="stat-label">Nuove notifiche</div>
     </div>
   </div>
+
+  <!-- ═══ BANNER INVITI IN SOSPESO ═══ -->
+  @if (pendingViews() > 0) {
+    <div class="pending-banner">
+      <i class="pi pi-eye"></i>
+      <span>
+        <strong>{{ pendingViews() }}</strong> {{ pendingViews() === 1 ? 'persona ha' : 'persone hanno' }}
+        aperto l'invito ma non {{ pendingViews() === 1 ? 'ha' : 'hanno' }} ancora confermato
+      </span>
+    </div>
+  }
 
   <!-- ═══ NOTIFICHE ═══ -->
   @if (notifications().length > 0) {
@@ -175,7 +193,11 @@
                   class="rsvp-row"
                   [class.rsvp-row--confirm]="confirmDeleteId() === rsvp.id"
                 >
-                  <div class="avatar">
+                  <div
+                    class="avatar"
+                    [style.background]="getAvatarColor(rsvp.nome).bg"
+                    [style.color]="getAvatarColor(rsvp.nome).text"
+                  >
                     {{ rsvp.nome.charAt(0).toUpperCase() }}
                   </div>
                   <div class="rsvp-content">

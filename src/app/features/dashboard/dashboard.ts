@@ -6,22 +6,31 @@ import { FormsModule } from '@angular/forms';
 import { BadgeModule } from 'primeng/badge';
 import { ButtonModule } from 'primeng/button';
 import { TagModule } from 'primeng/tag';
+import { ToastModule } from 'primeng/toast';
+import { MessageService } from 'primeng/api';
+import { avatarColor } from '../../core/utils/avatar-color.util';
+import confetti from 'canvas-confetti';
 
 export type SortOption = 'date' | 'nome' | 'partecipanti';
 
 @Component({
   selector: 'app-dashboard',
-  imports: [DatePipe, FormsModule, BadgeModule, ButtonModule, TagModule],
+  imports: [DatePipe, FormsModule, BadgeModule, ButtonModule, TagModule, ToastModule],
+  providers: [MessageService],
   templateUrl: './dashboard.html',
   styleUrl: './dashboard.scss',
 })
 export class Dashboard implements OnInit, OnDestroy {
   private rsvpService = inject(RsvpService);
+  private messageService = inject(MessageService);
   authStore = inject(AuthStore);
 
   rsvps = signal<Rsvp[]>([]);
   notifications = signal<Notification[]>([]);
   loading = signal(true);
+
+  // Tracking visite invito
+  inviteViews = signal(0);
 
   // Filtri e ricerca
   searchQuery = signal('');
@@ -40,6 +49,9 @@ export class Dashboard implements OnInit, OnDestroy {
 
   private unsubRsvp?: () => void;
   private unsubNotifications?: () => void;
+
+  /** Colore avatar unico dal nome */
+  getAvatarColor = avatarColor;
 
   /** RSVP attivi (non eliminati) */
   activeRsvps = computed(() => this.rsvps().filter(r => !r.deleted));
@@ -80,6 +92,9 @@ export class Dashboard implements OnInit, OnDestroy {
     this.activeRsvps().filter(r => !!r.messaggio)
   );
 
+  /** Quante persone hanno aperto l'invito ma non hanno confermato */
+  pendingViews = computed(() => Math.max(0, this.inviteViews() - this.activeRsvps().length));
+
   get totalPersone(): number {
     return this.activeRsvps().reduce((sum, r) => sum + r.num_partecipanti, 0);
   }
@@ -90,8 +105,9 @@ export class Dashboard implements OnInit, OnDestroy {
 
   ngOnInit() {
     this.loadData();
+    this.loadInviteViews();
 
-    this.unsubRsvp = this.rsvpService.listenToRsvp(() => this.loadData());
+    this.unsubRsvp = this.rsvpService.listenToRsvp(() => this.onNewRsvp());
     this.unsubNotifications = this.rsvpService.listenToNotifications(() =>
       this.loadNotifications()
     );
@@ -120,15 +136,68 @@ export class Dashboard implements OnInit, OnDestroy {
     });
   }
 
+  loadInviteViews() {
+    this.rsvpService.getInviteViewsCount().subscribe({
+      next: (count) => this.inviteViews.set(count),
+    });
+  }
+
+  /** Quando arriva un nuovo RSVP in real-time: ricarica + confetti + toast */
+  private onNewRsvp() {
+    const prevCount = this.activeRsvps().length;
+
+    this.rsvpService.getAllRsvp().subscribe({
+      next: (data) => {
+        this.rsvps.set(data);
+        this.loading.set(false);
+
+        // Se ci sono più RSVP attivi di prima → è una nuova conferma
+        const newActive = data.filter(r => !r.deleted);
+        if (newActive.length > prevCount) {
+          const newest = newActive[0]; // ordinati desc per data
+          this.fireConfetti();
+          this.messageService.add({
+            severity: 'success',
+            summary: 'Nuova conferma!',
+            detail: `${newest.nome} ha confermato con ${newest.num_partecipanti} persona/e`,
+            life: 5000,
+          });
+        }
+      },
+    });
+    this.loadNotifications();
+  }
+
+  /** Lancia coriandoli dalla pagina */
+  private fireConfetti() {
+    const defaults = { startVelocity: 30, spread: 360, ticks: 80, zIndex: 9999 };
+
+    confetti({ ...defaults, particleCount: 50, origin: { x: 0.3, y: 0.5 } });
+    confetti({ ...defaults, particleCount: 50, origin: { x: 0.7, y: 0.5 } });
+
+    setTimeout(() => {
+      confetti({ ...defaults, particleCount: 30, origin: { x: 0.5, y: 0.3 } });
+    }, 250);
+  }
+
   markAllRead() {
     this.rsvpService.markAllNotificationsRead().subscribe({
-      next: () => this.loadNotifications(),
+      next: () => {
+        this.loadNotifications();
+        this.messageService.add({
+          severity: 'info',
+          summary: 'Notifiche',
+          detail: 'Tutte le notifiche segnate come lette',
+          life: 3000,
+        });
+      },
     });
   }
 
   /** Primo click: mostra conferma. Secondo click: soft delete. */
   onDelete(id: string) {
     if (this.confirmDeleteId() === id) {
+      const rsvp = this.rsvps().find(r => r.id === id);
       this.deleting.set(true);
       this.rsvpService.softDeleteRsvp(id).subscribe({
         next: () => {
@@ -137,6 +206,12 @@ export class Dashboard implements OnInit, OnDestroy {
           );
           this.confirmDeleteId.set(null);
           this.deleting.set(false);
+          this.messageService.add({
+            severity: 'warn',
+            summary: 'Spostato nel cestino',
+            detail: rsvp ? `${rsvp.nome} rimosso dalla lista` : 'RSVP eliminato',
+            life: 3000,
+          });
         },
         error: () => {
           this.confirmDeleteId.set(null);
@@ -154,11 +229,18 @@ export class Dashboard implements OnInit, OnDestroy {
 
   /** Ripristina un RSVP dal cestino */
   onRestore(id: string) {
+    const rsvp = this.rsvps().find(r => r.id === id);
     this.rsvpService.restoreRsvp(id).subscribe({
       next: () => {
         this.rsvps.update(list =>
           list.map(r => r.id === id ? { ...r, deleted: false } : r)
         );
+        this.messageService.add({
+          severity: 'success',
+          summary: 'Ripristinato',
+          detail: rsvp ? `${rsvp.nome} di nuovo nella lista` : 'RSVP ripristinato',
+          life: 3000,
+        });
       },
     });
   }
